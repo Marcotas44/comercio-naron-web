@@ -1,0 +1,123 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import CTA from '../components/CTA.astro';
+import Icon from '../components/Icon.astro';
+
+const categorias = ['Alimentación', 'Moda', 'Hostelería', 'Producto local', 'Servicios', 'Salud y belleza'];
+const zonas = ['O Alto', 'Xuvia', 'A Solaina', 'A Gándara', 'Piñeiros'];
+
+// Comercios de muestra (sustituir por los reales de la asociación)
+const comercios = [
+  { name: 'Frutería A Horta', cat: 'Alimentación', zona: 'Xuvia', img: '/img/fruteria.jpg', dir: 'Rúa Real, 12', tel: '34622086621', desc: 'Fruta y verdura de temporada, producto de la huerta gallega.' },
+  { name: 'Obrador San Martiño', cat: 'Alimentación', zona: 'A Gándara', img: '/img/panaderia.jpg', dir: 'Av. de Galicia, 4', tel: '34622086621', desc: 'Pan artesano de masa madre y repostería tradicional.' },
+  { name: 'Moda Atlántica', cat: 'Moda', zona: 'O Alto', img: '/img/escaparate.jpg', dir: 'Rúa do Comercio, 28', tel: '34622086621', desc: 'Ropa y complementos para toda la familia. Marcas seleccionadas.' },
+  { name: 'Boutique Marea', cat: 'Moda', zona: 'A Solaina', img: '/img/boutique.jpg', dir: 'Praza Maior, 7', tel: '34622086621', desc: 'Moda de autor y piezas exclusivas con asesoramiento personal.' },
+  { name: 'Cafetería O Recuncho', cat: 'Hostelería', zona: 'O Alto', img: '/img/cafe.jpg', dir: 'Rúa Nova, 15', tel: '34622086621', desc: 'Café de especialidad, desayunos y meriendas caseras.' },
+  { name: 'Mel & Terra', cat: 'Producto local', zona: 'Piñeiros', img: '/img/producto-local.jpg', dir: 'Camiño da Fonte, 3', tel: '34622086621', desc: 'Miel, conservas y gourmet de productores de la zona.' },
+  { name: 'Verduras do Val', cat: 'Alimentación', zona: 'A Gándara', img: '/img/mercado.jpg', dir: 'Mercado Municipal, p. 9', tel: '34622086621', desc: 'Verdura fresca diaria directa del campo a tu mesa.' },
+  { name: 'Estilo & Color', cat: 'Salud y belleza', zona: 'A Solaina', img: '/img/boutique.jpg', dir: 'Rúa da Igrexa, 22', tel: '34622086621', desc: 'Peluquería y estética con productos profesionales.' },
+  { name: 'Servicios Narón Hogar', cat: 'Servicios', zona: 'Xuvia', img: '/img/escaparate.jpg', dir: 'Av. das Pías, 40', tel: '34622086621', desc: 'Reformas, electrodomésticos y servicio técnico de confianza.' },
+];
+---
+<Layout title="Directorio de comercios | Comercio de Narón"
+        description="Encuentra entre más de 90 comercios locales de Narón. Filtra por categoría y zona: alimentación, moda, hostelería, servicios y más.">
+
+  <PageHero eyebrow="Directorio"
+            title="Encuentra tu comercio en Narón"
+            subtitle="Más de 90 tiendas locales en más de 40 categorías. Filtra por lo que buscas y por tu zona." />
+
+  <!-- BUSCADOR + FILTROS -->
+  <section class="mx-auto max-w-6xl px-4 py-12">
+    <div class="rounded-2xl border border-brand-100 bg-white p-5 shadow-soft">
+      <div class="grid gap-3 md:grid-cols-[1fr_auto]">
+        <div class="relative">
+          <Icon name="search" class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/40" />
+          <input id="buscar" type="search" placeholder="Buscar comercio por nombre…"
+                 class="w-full rounded-xl border border-brand-100 py-3 pl-12 pr-4 outline-none focus:border-brand" />
+        </div>
+        <select id="filtro-zona" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+          <option value="">Todas las zonas</option>
+          {zonas.map((z) => <option value={z}>{z}</option>)}
+        </select>
+      </div>
+
+      <!-- Chips de categoría -->
+      <div id="chips" class="mt-4 flex flex-wrap gap-2">
+        <button data-cat="" class="chip is-active rounded-full border border-brand-100 px-4 py-1.5 text-sm font-semibold">Todas</button>
+        {categorias.map((c) => (
+          <button data-cat={c} class="chip rounded-full border border-brand-100 px-4 py-1.5 text-sm font-semibold">{c}</button>
+        ))}
+      </div>
+    </div>
+
+    <p id="contador" class="mt-5 text-sm text-ink/60">{comercios.length} comercios</p>
+
+    <!-- GRID -->
+    <div id="grid" class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {comercios.map((c) => (
+        <article class="card overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1"
+                 data-cat={c.cat} data-zona={c.zona} data-name={c.name.toLowerCase()}>
+          <div class="relative h-44 overflow-hidden">
+            <img src={c.img} alt={c.name} loading="lazy" class="h-full w-full object-cover" />
+            <span class="absolute left-3 top-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{c.cat}</span>
+          </div>
+          <div class="p-5">
+            <h3 class="font-display text-lg font-bold">{c.name}</h3>
+            <p class="mt-1 flex items-center gap-1.5 text-xs font-medium text-ink/55"><Icon name="mappin" class="h-3.5 w-3.5" /> {c.dir} · {c.zona}</p>
+            <p class="mt-3 text-sm text-ink/70">{c.desc}</p>
+            <div class="mt-4 flex gap-2">
+              <a href={`https://wa.me/${c.tel}`} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand hover:bg-brand-100"><Icon name="whatsapp" class="h-4 w-4" /> WhatsApp</a>
+              <a href={`tel:+${c.tel}`} class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand hover:bg-brand-100"><Icon name="phone" class="h-4 w-4" /> Llamar</a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <p id="vacio" class="mt-10 hidden text-center text-ink/60">No hay comercios que coincidan con tu búsqueda.</p>
+  </section>
+
+  <CTA title="¿Tu comercio aún no está en el directorio?"
+       text="Date de alta en la asociación y aparece ante miles de vecinos de Narón."
+       ctaLabel="Hazte socio" ctaHref="/hazte-socio" />
+</Layout>
+
+<style>
+  .chip.is-active { background: var(--color-brand); color: #fff; border-color: var(--color-brand); }
+</style>
+
+<script>
+  const buscar = document.getElementById('buscar');
+  const zona = document.getElementById('filtro-zona');
+  const chips = Array.from(document.querySelectorAll('.chip'));
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const contador = document.getElementById('contador');
+  const vacio = document.getElementById('vacio');
+  let cat = '';
+
+  function aplicar() {
+    const q = (buscar.value || '').toLowerCase().trim();
+    const z = zona.value;
+    let visibles = 0;
+    cards.forEach((card) => {
+      const okCat = !cat || card.dataset.cat === cat;
+      const okZona = !z || card.dataset.zona === z;
+      const okText = !q || card.dataset.name.includes(q);
+      const show = okCat && okZona && okText;
+      card.classList.toggle('hidden', !show);
+      if (show) visibles++;
+    });
+    contador.textContent = `${visibles} comercio${visibles === 1 ? '' : 's'}`;
+    vacio.classList.toggle('hidden', visibles !== 0);
+  }
+
+  chips.forEach((chip) => chip.addEventListener('click', () => {
+    chips.forEach((c) => c.classList.remove('is-active'));
+    chip.classList.add('is-active');
+    cat = chip.dataset.cat;
+    aplicar();
+  }));
+  buscar.addEventListener('input', aplicar);
+  zona.addEventListener('change', aplicar);
+</script>

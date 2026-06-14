@@ -1,0 +1,22 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  title: string;
+  text: string;
+  ctaLabel: string;
+  ctaHref: string;
+}
+const { title, text, ctaLabel, ctaHref } = Astro.props;
+---
+<section class="relative overflow-hidden bg-brand">
+  <div class="absolute inset-0 bg-grid opacity-40"></div>
+  <div class="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-16 text-center md:flex-row md:justify-between md:text-left">
+    <div>
+      <h2 class="font-display text-2xl font-extrabold text-white md:text-3xl">{title}</h2>
+      <p class="mt-2 max-w-2xl text-white/80">{text}</p>
+    </div>
+    <a href={ctaHref} class="inline-flex shrink-0 items-center gap-2 rounded-full bg-accent px-8 py-3.5 font-bold text-brand-dark shadow-lg transition hover:bg-accent-soft">
+      {ctaLabel} <Icon name="arrow" class="h-5 w-5" />
+    </a>
+  </div>
+</section>

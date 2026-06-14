@@ -1,0 +1,29 @@
+---
+interface Props {
+  variant?: 'dark' | 'light';
+  class?: string;
+}
+const { variant = 'dark', class: cls = '' } = Astro.props;
+const wordColor = variant === 'light' ? 'text-white' : 'text-brand';
+const subColor = variant === 'light' ? 'text-white/70' : 'text-ink/55';
+---
+<a href="/" class={`flex items-center gap-3 ${cls}`} aria-label="Inicio — Comercio de Narón">
+  <!-- Emblema: escaparate con toldo + ría de Narón -->
+  <svg viewBox="0 0 48 48" class="h-11 w-11 shrink-0" aria-hidden="true">
+    <rect x="1.5" y="1.5" width="45" height="45" rx="13"
+          fill="var(--color-brand)" stroke="var(--color-accent)" stroke-width="1.5"/>
+    <!-- toldo -->
+    <path d="M12 16h24l-2.5 6H14.5L12 16Z" fill="var(--color-accent)"/>
+    <path d="M15.5 22l1.7-6M20.5 22l1-6M25.5 22l0-6M30.5 22l-1-6" stroke="var(--color-brand)" stroke-width="1.1"/>
+    <!-- fachada -->
+    <path d="M14.5 22v11h19V22" stroke="#fff" stroke-width="1.6" fill="none"/>
+    <rect x="21.5" y="26" width="5" height="7" fill="#fff"/>
+    <!-- ría / olas -->
+    <path d="M13 37c2-1.6 4-1.6 6 0s4 1.6 6 0 4-1.6 6 0 4 1.6 6 0"
+          stroke="var(--color-accent-soft)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  </svg>
+  <span class="leading-tight">
+    <span class={`block font-display text-lg font-extrabold ${wordColor}`}>Comercio de Narón</span>
+    <span class={`block text-[11px] font-semibold uppercase tracking-[0.18em] ${subColor}`}>Asociación de Comerciantes</span>
+  </span>
+</a>

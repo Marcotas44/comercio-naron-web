@@ -1,0 +1,254 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CTA from '../components/CTA.astro';
+import Icon from '../components/Icon.astro';
+
+const stats = [
+  { n: '+90', l: 'comercios asociados' },
+  { n: '40+', l: 'categorías' },
+  { n: '6€', l: 'cuota al mes' },
+  { n: '12', l: 'campañas al año' },
+];
+
+const directorio = [
+  { name: 'Alimentación y frescos', img: '/img/fruteria.jpg', cat: 'Fruterías · Carnicerías · Pescaderías' },
+  { name: 'Panaderías y obradores', img: '/img/panaderia.jpg', cat: 'Pan artesano · Pastelería' },
+  { name: 'Moda y complementos', img: '/img/escaparate.jpg', cat: 'Ropa · Calzado · Bolsos' },
+  { name: 'Cafeterías y hostelería', img: '/img/cafe.jpg', cat: 'Cafés · Bares · Restaurantes' },
+  { name: 'Producto local', img: '/img/producto-local.jpg', cat: 'Artesanía · Gourmet' },
+  { name: 'Servicios y bienestar', img: '/img/mercado.jpg', cat: 'Peluquerías · Ópticas · Más' },
+];
+
+const ventajas = [
+  { icon: 'megaphone', title: 'Más clientes', text: 'Apareces en el directorio y en todas las campañas conjuntas de la asociación.' },
+  { icon: 'gift', title: 'Marketing compartido', text: 'Sorteos, eventos y promociones que ningún comercio podría costear en solitario.' },
+  { icon: 'users', title: 'Fuerza colectiva', text: 'Representación e interlocución ante el Ayuntamiento y las administraciones.' },
+  { icon: 'shield', title: 'Identidad y respaldo', text: 'Material, formación y el respaldo de una asociación consolidada en Narón.' },
+];
+
+const campanas = [
+  { tag: 'En curso', img: '/img/evento.jpg', title: 'Sorteo de Primavera', date: 'Marzo – Junio 2026',
+    text: 'Compra en los comercios asociados, consigue boletos y participa en el gran sorteo de premios.' },
+  { tag: 'Navidad', img: '/img/producto-local.jpg', title: 'Choiva de Agasallos', date: 'Diciembre 2025',
+    text: 'La campaña estrella de Navidad: cientos de regalos para quienes compran en el comercio local.' },
+  { tag: 'Todo el año', img: '/img/fruteria.jpg', title: 'Comercio Aberto', date: 'Permanente',
+    text: 'Jornadas de puertas abiertas, descuentos y animación en las calles comerciales de Narón.' },
+];
+
+const testimonios = [
+  { img: '/img/testimonio-2.jpg', name: 'Marta Vázquez', shop: 'Moda Atlántica',
+    quote: 'Desde que estamos en la asociación entran clientes nuevos cada semana. Las campañas conjuntas nos dan una visibilidad que solos no tendríamos.' },
+  { img: '/img/testimonio-1.jpg', name: 'Brais Lema', shop: 'Frutería A Horta',
+    quote: 'Por 6 euros al mes formo parte de algo que mueve a todo el comercio de Narón. La unión se nota en la calle y en la caja.' },
+  { img: '/img/testimonio-3.jpg', name: 'Diego Souto', shop: 'Cafetería O Recuncho',
+    quote: 'Los sorteos y eventos llenan el barrio. Notamos el empujón en cada campaña y el trato con la directiva es cercano y rápido.' },
+];
+---
+
+<Layout>
+  <!-- ===================== HERO ===================== -->
+  <section class="relative isolate overflow-hidden">
+    <img src="/img/hero.jpg" alt="Comercio local de Narón" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-dark/95 via-brand-dark/80 to-brand-dark/40"></div>
+
+    <div class="mx-auto max-w-6xl px-4 py-24 md:py-32">
+      <div class="max-w-2xl text-white">
+        <span class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] backdrop-blur">
+          <Icon name="mappin" class="h-4 w-4 text-accent-soft" /> Narón · Galicia
+        </span>
+        <h1 class="mt-6 font-display text-4xl font-black leading-[1.05] md:text-6xl">
+          El comercio de Narón,<br /><span class="text-accent-soft">más vivo que nunca.</span>
+        </h1>
+        <p class="mt-6 max-w-xl text-lg text-white/85">
+          Somos la <strong class="text-white">Asociación de Comerciantes de Narón</strong>: más de 90 tiendas
+          locales unidas para que comprar cerca siga mereciendo la pena.
+        </p>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <a href="/directorio" class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-3.5 font-bold text-brand-dark shadow-lg transition hover:bg-accent-soft">
+            <Icon name="search" class="h-5 w-5" /> Buscar comercio
+          </a>
+          <a href="/hazte-socio" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/5 px-7 py-3.5 font-bold text-white backdrop-blur transition hover:bg-white/15">
+            Soy comerciante <Icon name="arrow" class="h-5 w-5" />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Franja de cifras superpuesta -->
+    <div class="relative border-t border-white/10 bg-brand-dark/60 backdrop-blur">
+      <div class="mx-auto grid max-w-6xl grid-cols-2 divide-x divide-white/10 px-4 md:grid-cols-4">
+        {stats.map((s) => (
+          <div class="px-4 py-6 text-center text-white">
+            <div class="font-display text-3xl font-black text-accent-soft">{s.n}</div>
+            <div class="mt-1 text-xs font-medium uppercase tracking-wide text-white/70">{s.l}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== POR QUÉ COMPRAR LOCAL ===================== -->
+  <section class="bg-cream bg-grid">
+    <div class="mx-auto max-w-6xl px-4 py-20">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent">Comprar en Narón</p>
+        <h2 class="rule-accent text-center mt-2 font-display text-3xl font-extrabold md:text-4xl">Cuando compras cerca, gana todo el pueblo</h2>
+        <p class="mt-4 text-ink/70">El dinero se queda en el barrio, mantiene empleo y llena de vida las calles. Esa es la fuerza del comercio de proximidad.</p>
+      </div>
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {[
+          { icon: 'heart', t: 'Trato de verdad', d: 'Te conocen, te asesoran y te resuelven. Personas, no códigos de pedido.' },
+          { icon: 'mappin', t: 'A la vuelta de la esquina', d: 'Todo lo que necesitas, sin coches ni colas, en tu propio barrio.' },
+          { icon: 'sparkles', t: 'Calidad y producto local', d: 'Frescura, artesanía y marcas de confianza que solo encuentras aquí.' },
+        ].map((c) => (
+          <div class="rounded-2xl border border-brand-100 bg-white p-8 shadow-soft">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand"><Icon name={c.icon} /></div>
+            <h3 class="mt-5 text-lg font-bold">{c.t}</h3>
+            <p class="mt-2 text-sm text-ink/70">{c.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DIRECTORIO (fotos reales) ===================== -->
+  <section class="mx-auto max-w-6xl px-4 py-20">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent">Directorio</p>
+        <h2 class="rule-accent mt-2 font-display text-3xl font-extrabold md:text-4xl">Más de 40 categorías de comercio</h2>
+      </div>
+      <a href="/directorio" class="inline-flex items-center gap-2 font-semibold text-brand hover:text-brand-dark">Ver todo el directorio <Icon name="arrow" class="h-5 w-5" /></a>
+    </div>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {directorio.map((c) => (
+        <a href="/directorio" class="group overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1">
+          <div class="relative h-52 overflow-hidden">
+            <img src={c.img} alt={c.name} loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/55 to-transparent"></div>
+            <h3 class="absolute bottom-3 left-4 right-4 font-display text-xl font-bold text-white">{c.name}</h3>
+          </div>
+          <p class="px-5 py-4 text-sm text-ink/65">{c.cat}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- CTA 1 -->
+  <CTA title="¿Tienes un comercio en Narón?"
+       text="Únete a la asociación desde 6€/mes y empieza a aparecer ante miles de vecinos."
+       ctaLabel="Quiero asociarme" ctaHref="/hazte-socio" />
+
+  <!-- ===================== CAMPAÑAS Y EVENTOS REALES ===================== -->
+  <section class="bg-cream bg-grid">
+    <div class="mx-auto max-w-6xl px-4 py-20">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent">Vida en las calles</p>
+        <h2 class="rule-accent text-center mt-2 font-display text-3xl font-extrabold md:text-4xl">Campañas y eventos del comercio</h2>
+        <p class="mt-4 text-ink/70">Cada año movemos el comercio de Narón con sorteos, animación y promociones conjuntas.</p>
+      </div>
+
+      <div class="mt-12 grid gap-7 md:grid-cols-3">
+        {campanas.map((c) => (
+          <article class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-brand-100">
+            <div class="relative h-44 overflow-hidden">
+              <img src={c.img} alt={c.title} loading="lazy" class="h-full w-full object-cover" />
+              <span class="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-xs font-bold text-brand-dark">{c.tag}</span>
+            </div>
+            <div class="flex flex-1 flex-col p-6">
+              <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand"><Icon name="calendar" class="h-4 w-4" /> {c.date}</div>
+              <h3 class="mt-2 font-display text-xl font-bold">{c.title}</h3>
+              <p class="mt-2 flex-1 text-sm text-ink/70">{c.text}</p>
+              <a href="/campanas" class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand hover:text-brand-dark">Más información <Icon name="arrow" class="h-4 w-4" /></a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== VENTAJAS DE ASOCIARSE ===================== -->
+  <section class="mx-auto max-w-6xl px-4 py-20">
+    <div class="grid items-center gap-12 lg:grid-cols-2">
+      <div>
+        <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent">Para comerciantes</p>
+        <h2 class="rule-accent mt-2 font-display text-3xl font-extrabold md:text-4xl">Tu negocio no debería competir solo</h2>
+        <p class="mt-4 text-ink/70">Formar parte de la Asociación de Comerciantes de Narón es sumar tu tienda a una comunidad que trabaja, negocia y se promociona unida.</p>
+        <div class="mt-8 grid gap-5 sm:grid-cols-2">
+          {ventajas.map((v) => (
+            <div class="rounded-2xl border border-brand-100 bg-cream p-5">
+              <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-white"><Icon name={v.icon} class="h-5 w-5" /></div>
+              <h3 class="mt-4 font-bold">{v.title}</h3>
+              <p class="mt-1 text-sm text-ink/70">{v.text}</p>
+            </div>
+          ))}
+        </div>
+        <a href="/hazte-socio" class="mt-8 inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 font-bold text-white shadow-soft transition hover:bg-brand-dark">Hazte socio <Icon name="arrow" class="h-5 w-5" /></a>
+      </div>
+      <div class="relative">
+        <img src="/img/boutique.jpg" alt="Comerciante asociado de Narón" class="aspect-[4/5] w-full rounded-3xl object-cover shadow-soft" />
+        <div class="absolute -bottom-6 -left-6 hidden rounded-2xl bg-white p-5 shadow-soft ring-1 ring-brand-100 sm:block">
+          <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-50 text-brand"><Icon name="store" class="h-5 w-5" /></div>
+            <div>
+              <div class="font-display text-2xl font-black text-brand">+90</div>
+              <div class="text-xs font-medium text-ink/60">comercios ya confían</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TESTIMONIOS ===================== -->
+  <section class="bg-brand-dark">
+    <div class="mx-auto max-w-6xl px-4 py-20">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent-soft">Lo dicen ellos</p>
+        <h2 class="text-center mt-2 font-display text-3xl font-extrabold text-white md:text-4xl">Comerciantes que ya forman parte</h2>
+      </div>
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {testimonios.map((t) => (
+          <figure class="flex flex-col rounded-2xl bg-white/5 p-7 ring-1 ring-white/10 backdrop-blur">
+            <Icon name="quote" class="h-8 w-8 text-accent-soft" />
+            <blockquote class="mt-4 flex-1 text-white/90">{t.quote}</blockquote>
+            <div class="mt-5 flex items-center gap-1 text-accent-soft">
+              {[1,2,3,4,5].map(() => <Icon name="star" class="h-4 w-4" />)}
+            </div>
+            <figcaption class="mt-5 flex items-center gap-3 border-t border-white/10 pt-5">
+              <img src={t.img} alt={t.name} loading="lazy" class="h-12 w-12 rounded-full object-cover ring-2 ring-accent-soft/40" />
+              <div>
+                <div class="font-bold text-white">{t.name}</div>
+                <div class="text-sm text-white/60">{t.shop}</div>
+              </div>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CARTA DE LA JUNTA ===================== -->
+  <section class="mx-auto max-w-6xl px-4 py-20">
+    <div class="grid items-center gap-10 rounded-3xl bg-cream p-8 ring-1 ring-brand-100 md:grid-cols-[auto_1fr] md:p-12">
+      <img src="/img/presidenta.jpg" alt="Junta directiva de la Asociación de Comerciantes de Narón" class="mx-auto h-40 w-40 rounded-2xl object-cover shadow-soft md:h-48 md:w-48" />
+      <div>
+        <Icon name="quote" class="h-9 w-9 text-accent" />
+        <p class="mt-3 font-display text-xl font-medium leading-relaxed text-ink md:text-2xl">
+          “Defender el comercio de Narón es defender nuestro empleo, nuestras calles y nuestra forma de vida.
+          Juntos somos una voz que se escucha y una oferta que enamora.”
+        </p>
+        <div class="mt-5">
+          <div class="font-bold text-brand">La Junta Directiva</div>
+          <div class="text-sm text-ink/60">Asociación de Comerciantes de Narón</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <CTA title="Súmate a los +90 comercios que ya forman parte"
+       text="Asóciate hoy y empieza a vender mejor mañana. Te acompañamos en todo el proceso."
+       ctaLabel="Hazte socio" ctaHref="/hazte-socio" />
+</Layout>

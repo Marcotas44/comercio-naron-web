@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import CTA from '../components/CTA.astro';
+
+const canales = [
+  { icon: 'whatsapp', t: 'WhatsApp', d: 'Respuesta rápida', href: 'https://wa.me/34622086621', cta: 'Abrir chat' },
+  { icon: 'phone', t: '622 086 621', d: 'Llámanos de 10 a 14 y 17 a 20', href: 'tel:+34622086621', cta: 'Llamar' },
+  { icon: 'mail', t: 'info@comerciodenaron.com', d: 'Te respondemos en 24 h', href: 'mailto:info@comerciodenaron.com', cta: 'Escribir' },
+];
+---
+<Layout title="Contacto | Comercio de Narón" description="Contacta con la Asociación de Comerciantes de Narón. Teléfono, WhatsApp, email y ubicación en Narón.">
+  <section class="bg-cream bg-grid">
+    <div class="mx-auto max-w-6xl px-4 py-16">
+      <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent">Estamos para ayudarte</p>
+      <h1 class="rule-accent mt-2 font-display text-4xl font-black md:text-5xl">Hablemos</h1>
+      <p class="mt-4 max-w-xl text-ink/70">¿Eres comerciante y quieres asociarte, o vecino con una consulta? Elige el canal que prefieras.</p>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        {canales.map((c) => (
+          <a href={c.href} target="_blank" rel="noopener" class="group rounded-2xl border border-brand-100 bg-white p-7 shadow-soft transition hover:-translate-y-1">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand"><Icon name={c.icon} /></div>
+            <h3 class="mt-5 font-bold">{c.t}</h3>
+            <p class="text-sm text-ink/60">{c.d}</p>
+            <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand group-hover:text-brand-dark">{c.cta} <Icon name="arrow" class="h-4 w-4" /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-16">
+    <div class="grid gap-8 lg:grid-cols-2">
+      <!-- Formulario de contacto -->
+      <div class="rounded-3xl border border-brand-100 bg-white p-8 shadow-soft">
+        <h2 class="font-display text-2xl font-extrabold">Escríbenos</h2>
+        <p class="mt-1 text-sm text-ink/60">Te respondemos lo antes posible.</p>
+        <form id="contacto-form" class="mt-6 grid gap-4">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+          <div class="grid gap-4 sm:grid-cols-2">
+            <input required name="nombre" placeholder="Nombre" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="email" type="email" placeholder="Email" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+          </div>
+          <input name="telefono" type="tel" placeholder="Teléfono (opcional)" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+          <select required name="motivo" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+            <option value="">Motivo de tu consulta</option>
+            <option>Quiero asociarme</option>
+            <option>Soy vecino / consulta general</option>
+            <option>Prensa / colaboraciones</option>
+            <option>Otro</option>
+          </select>
+          <textarea required name="mensaje" rows="4" placeholder="Tu mensaje" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand"></textarea>
+          <label class="flex items-start gap-2 text-xs text-ink/60">
+            <input required type="checkbox" name="rgpd" class="mt-1" /> Acepto la política de privacidad y el tratamiento de mis datos.
+          </label>
+          <button class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 font-bold text-brand-dark shadow transition hover:bg-accent-soft">
+            Enviar mensaje <Icon name="arrow" class="h-5 w-5" />
+          </button>
+          <p id="form-msg" class="hidden text-center text-sm font-medium"></p>
+        </form>
+      </div>
+
+      <!-- Datos + mapa -->
+      <div class="flex flex-col gap-8">
+        <div class="rounded-3xl border border-brand-100 bg-white p-7 shadow-soft">
+          <h2 class="font-display text-xl font-bold">Asociación de Comerciantes de Narón</h2>
+          <ul class="mt-5 space-y-3 text-sm text-ink/75">
+            <li class="flex items-center gap-2"><Icon name="mappin" class="h-4 w-4 text-brand" /> Narón, A Coruña (Galicia)</li>
+            <li class="flex items-center gap-2"><Icon name="phone" class="h-4 w-4 text-brand" /> 622 086 621</li>
+            <li class="flex items-center gap-2"><Icon name="mail" class="h-4 w-4 text-brand" /> info@comerciodenaron.com</li>
+            <li class="flex items-center gap-2"><Icon name="users" class="h-4 w-4 text-brand" /> +90 comercios asociados</li>
+          </ul>
+        </div>
+        <div class="flex-1 overflow-hidden rounded-3xl border border-brand-100 shadow-soft">
+          <iframe title="Mapa de Narón" src="https://www.google.com/maps?q=Nar%C3%B3n%2C%20A%20Coru%C3%B1a&output=embed" class="h-full min-h-72 w-full" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTA title="¿Tienes un comercio en Narón?"
+       text="Asóciate desde 6€/mes y empieza a aparecer ante miles de vecinos."
+       ctaLabel="Hazte socio" ctaHref="/hazte-socio" />
+
+  <script>
+    // Webhook aún NO conectado. Define PUBLIC_N8N_WEBHOOK en Netlify para activar el envío.
+    const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK || '';
+    const form = document.getElementById('contacto-form');
+    const msg = document.getElementById('form-msg');
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      if (data.website) return; // honeypot
+
+      // Modo demo: sin webhook configurado, no se envía nada a ningún servidor.
+      if (!N8N_WEBHOOK) {
+        form.reset();
+        msg.className = 'text-center text-sm font-medium text-brand';
+        msg.textContent = '✅ ¡Gracias! El formulario está listo; el envío se activará al conectar el sistema.';
+        msg.classList.remove('hidden');
+        return;
+      }
+
+      msg.className = 'text-center text-sm text-ink/60'; msg.textContent = 'Enviando…'; msg.classList.remove('hidden');
+      try {
+        const res = await fetch(N8N_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, origen: 'web-contacto' }) });
+        if (!res.ok) throw new Error();
+        form.reset();
+        msg.className = 'text-center text-sm font-medium text-brand'; msg.textContent = '✅ ¡Mensaje enviado! Te responderemos pronto.';
+      } catch {
+        msg.className = 'text-center text-sm font-medium text-red-600'; msg.textContent = 'No se pudo enviar. Escríbenos por WhatsApp.';
+      }
+    });
+  </script>
+</Layout>

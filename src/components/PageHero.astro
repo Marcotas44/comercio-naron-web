@@ -1,0 +1,31 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  eyebrow: string;
+  title: string;
+  subtitle?: string;
+  image?: string;        // opcional: fondo fotográfico
+}
+const { eyebrow, title, subtitle, image } = Astro.props;
+---
+{image ? (
+  <section class="relative isolate overflow-hidden">
+    <img src={image} alt={title} class="absolute inset-0 -z-10 h-full w-full object-cover" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-dark/95 to-brand-dark/70"></div>
+    <div class="mx-auto max-w-6xl px-4 py-20 text-white md:py-24">
+      <span class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em]">
+        <Icon name="mappin" class="h-4 w-4 text-accent-soft" /> {eyebrow}
+      </span>
+      <h1 class="mt-6 max-w-3xl font-display text-4xl font-black leading-tight md:text-5xl">{title}</h1>
+      {subtitle && <p class="mt-5 max-w-xl text-lg text-white/85">{subtitle}</p>}
+    </div>
+  </section>
+) : (
+  <section class="border-b border-brand-100 bg-cream bg-grid">
+    <div class="mx-auto max-w-6xl px-4 py-16 md:py-20">
+      <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>
+      <h1 class="rule-accent mt-2 font-display text-4xl font-black md:text-5xl">{title}</h1>
+      {subtitle && <p class="mt-4 max-w-2xl text-ink/70">{subtitle}</p>}
+    </div>
+  </section>
+)}

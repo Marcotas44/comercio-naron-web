@@ -1,0 +1,74 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+const year = new Date().getFullYear();
+---
+<footer class="bg-brand-dark text-white">
+  <!-- Newsletter -->
+  <div class="border-b border-white/10">
+    <div class="mx-auto flex max-w-6xl flex-col items-center gap-5 px-4 py-10 text-center md:flex-row md:justify-between md:text-left">
+      <div>
+        <h3 class="font-display text-xl font-bold">Recibe las campañas y sorteos antes que nadie</h3>
+        <p class="text-sm text-white/70">Novedades del comercio de Narón, una vez al mes. Sin spam.</p>
+      </div>
+      <form id="newsletter-form" class="w-full max-w-md">
+        <div class="flex gap-2">
+          <input type="email" required placeholder="Tu email" class="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder-white/50 outline-none focus:border-accent" />
+          <button class="rounded-full bg-accent px-5 py-3 text-sm font-bold text-brand-dark hover:bg-accent-soft">Suscribirme</button>
+        </div>
+        <p id="newsletter-msg" class="mt-2 hidden text-sm font-medium text-accent-soft"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-4">
+    <div class="md:col-span-1">
+      <Logo variant="light" />
+      <p class="mt-4 text-sm text-white/70">Más de 90 comercios locales unidos para hacer de Narón un lugar mejor para comprar y vivir.</p>
+    </div>
+
+    <div>
+      <h4 class="font-bold">Navegación</h4>
+      <ul class="mt-4 space-y-2.5 text-sm text-white/70">
+        <li><a class="hover:text-accent-soft" href="/directorio">Directorio</a></li>
+        <li><a class="hover:text-accent-soft" href="/ventajas">Ventajas de asociarse</a></li>
+        <li><a class="hover:text-accent-soft" href="/campanas">Campañas y eventos</a></li>
+        <li><a class="hover:text-accent-soft" href="/noticias">Noticias</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="font-bold">Contacto</h4>
+      <ul class="mt-4 space-y-2.5 text-sm text-white/70">
+        <li><a class="flex items-center gap-2 hover:text-accent-soft" href="tel:+34622086621"><Icon name="phone" class="h-4 w-4" /> 622 086 621</a></li>
+        <li><a class="flex items-center gap-2 hover:text-accent-soft" href="mailto:info@comerciodenaron.com"><Icon name="mail" class="h-4 w-4" /> info@comerciodenaron.com</a></li>
+        <li class="flex items-center gap-2"><Icon name="mappin" class="h-4 w-4" /> Narón, A Coruña (Galicia)</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="font-bold">Hazte socio</h4>
+      <p class="mt-4 text-sm text-white/70">Desde 6€/mes. Te acompañamos en todo el proceso.</p>
+      <a href="/hazte-socio" class="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-brand-dark hover:bg-accent-soft">Solicitar alta <Icon name="arrow" class="h-4 w-4" /></a>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10 py-5 text-center text-xs text-white/50">
+    © {year} Asociación de Comerciantes de Narón · Aviso legal · Política de privacidad · Cookies
+  </div>
+</footer>
+
+<script>
+  // Newsletter en modo demo (sin webhook todavía).
+  const WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK || '';
+  const nf = document.getElementById('newsletter-form');
+  const nm = document.getElementById('newsletter-msg');
+  nf?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    nf.reset();
+    nm.textContent = WEBHOOK
+      ? '✅ ¡Suscripción recibida! Gracias.'
+      : '✅ ¡Gracias! La suscripción se activará al conectar el sistema.';
+    nm.classList.remove('hidden');
+  });
+</script>

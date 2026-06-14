@@ -1,0 +1,141 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+
+const pasos = [
+  { n: '1', icon: 'mail', t: 'Rellenas el formulario', d: 'Solo lo esencial. Te lleva menos de un minuto.' },
+  { n: '2', icon: 'phone', t: 'Te llamamos', d: 'Resolvemos dudas y confirmamos los datos de tu comercio.' },
+  { n: '3', icon: 'store', t: 'Ya eres socio', d: 'Apareces en el directorio y entras en todas las campañas.' },
+];
+const incluye = [
+  'Ficha en el directorio online de comercios',
+  'Participación en sorteos y campañas conjuntas',
+  'Material e identidad corporativa de la asociación',
+  'Representación ante el Ayuntamiento y administraciones',
+  'Formación y asesoramiento para tu negocio',
+  'Una comunidad de +90 comercios que reman contigo',
+];
+---
+<Layout
+  title="Hazte socio | Comercio de Narón"
+  description="Únete a la Asociación de Comerciantes de Narón desde 6€/mes. Más visibilidad, campañas conjuntas y representación para tu comercio.">
+
+  <!-- HERO -->
+  <section class="relative isolate overflow-hidden">
+    <img src="/img/escaparate.jpg" alt="Comercio de Narón" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-dark/95 to-brand-dark/70"></div>
+    <div class="mx-auto max-w-6xl px-4 py-20 text-white md:py-28">
+      <span class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em]">
+        <Icon name="store" class="h-4 w-4 text-accent-soft" /> Para comerciantes de Narón
+      </span>
+      <h1 class="mt-6 max-w-3xl font-display text-4xl font-black leading-tight md:text-5xl">
+        Más visibilidad para tu negocio por <span class="text-accent-soft">6&nbsp;€/mes</span>
+      </h1>
+      <p class="mt-5 max-w-xl text-lg text-white/85">Únete a la asociación y deja de competir solo. Te acompañamos desde el primer día.</p>
+    </div>
+  </section>
+
+  <!-- PASOS -->
+  <section class="bg-cream bg-grid">
+    <div class="mx-auto max-w-6xl px-4 py-16">
+      <div class="grid gap-6 md:grid-cols-3">
+        {pasos.map((p) => (
+          <div class="relative rounded-2xl border border-brand-100 bg-white p-7 shadow-soft">
+            <span class="absolute right-5 top-4 font-display text-5xl font-black text-brand-50">{p.n}</span>
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-white"><Icon name={p.icon} /></div>
+            <h3 class="mt-5 text-lg font-bold">{p.t}</h3>
+            <p class="mt-1.5 text-sm text-ink/70">{p.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM + QUÉ INCLUYE -->
+  <section class="mx-auto max-w-6xl px-4 py-20">
+    <div class="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
+      <!-- Qué incluye -->
+      <div>
+        <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent">La cuota incluye</p>
+        <h2 class="rule-accent mt-2 font-display text-3xl font-extrabold">Todo esto, por menos de un café a la semana</h2>
+        <ul class="mt-8 space-y-4">
+          {incluye.map((i) => (
+            <li class="flex items-start gap-3">
+              <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand"><Icon name="check" class="h-4 w-4" /></span>
+              <span class="text-ink/80">{i}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="mt-8 flex items-center gap-4 rounded-2xl bg-brand p-6 text-white">
+          <Icon name="quote" class="h-9 w-9 shrink-0 text-accent-soft" />
+          <p class="text-sm italic text-white/90">“En la asociación encontré clientes, ideas y compañeros. Lo mejor que hice por mi tienda.” — Marta, Moda Atlántica</p>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <div class="rounded-3xl border border-brand-100 bg-white p-8 shadow-soft">
+        <h2 class="font-display text-2xl font-extrabold">Solicita tu alta</h2>
+        <p class="mt-1 text-sm text-ink/60">Te contactamos en menos de 24&nbsp;h.</p>
+
+        <form id="socio-form" class="mt-6 grid gap-4">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+          <div class="grid gap-4 sm:grid-cols-2">
+            <input required name="nombre" placeholder="Nombre y apellidos" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="comercio" placeholder="Nombre del comercio" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <input required name="telefono" type="tel" placeholder="Teléfono" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="email" type="email" placeholder="Email" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <select required name="sector" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+              <option value="">Sector</option><option>Alimentación</option><option>Moda</option><option>Hostelería</option><option>Servicios</option><option>Otro</option>
+            </select>
+            <select required name="zona" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+              <option value="">Zona</option><option>O Alto</option><option>Xuvia</option><option>A Solaina</option><option>Otra</option>
+            </select>
+          </div>
+          <label class="flex items-start gap-2 text-xs text-ink/60">
+            <input required type="checkbox" name="rgpd" class="mt-1" /> Acepto la política de privacidad y el tratamiento de mis datos.
+          </label>
+          <button class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 font-bold text-brand-dark shadow transition hover:bg-accent-soft">
+            Quiero asociarme <Icon name="arrow" class="h-5 w-5" />
+          </button>
+          <p id="form-msg" class="hidden text-center text-sm font-medium"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Webhook aún NO conectado. Cuando se quiera activar el envío,
+  // basta con definir PUBLIC_N8N_WEBHOOK en las variables de entorno de Netlify.
+  const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK || '';
+  const form = document.getElementById('socio-form');
+  const msg = document.getElementById('form-msg');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    if (data.website) return; // honeypot
+
+    // Modo demo: sin webhook configurado, no se envía nada a ningún servidor.
+    if (!N8N_WEBHOOK) {
+      form.reset();
+      msg.className = 'text-center text-sm font-medium text-brand';
+      msg.textContent = '✅ ¡Gracias! El formulario está listo; el envío se activará al conectar el sistema.';
+      msg.classList.remove('hidden');
+      return;
+    }
+
+    msg.className = 'text-center text-sm text-ink/60'; msg.textContent = 'Enviando…'; msg.classList.remove('hidden');
+    try {
+      const res = await fetch(N8N_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, origen: 'web-hazte-socio' }) });
+      if (!res.ok) throw new Error();
+      form.reset();
+      msg.className = 'text-center text-sm font-medium text-brand'; msg.textContent = '✅ ¡Solicitud enviada! Te contactaremos pronto.';
+    } catch {
+      msg.className = 'text-center text-sm font-medium text-red-600'; msg.textContent = 'No se pudo enviar. Escríbenos por WhatsApp.';
+    }
+  });
+</script>

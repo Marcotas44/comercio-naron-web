@@ -1,0 +1,77 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import CTA from '../components/CTA.astro';
+import Icon from '../components/Icon.astro';
+
+const destacada = {
+  img: '/img/evento.jpg', cat: 'Campañas', date: '2 de junio de 2026',
+  title: 'Arranca el Sorteo de Primavera con cientos de premios',
+  text: 'Más de 90 comercios de Narón se suman a la mayor campaña de la temporada. Te contamos cómo conseguir boletos y participar en el sorteo.',
+};
+
+const noticias = [
+  { img: '/img/fruteria.jpg', cat: 'Comercio local', date: '28 may 2026', title: 'Cinco razones para comprar fruta y verdura en tu barrio', text: 'Frescura, temporada y trato directo: por qué el producto de proximidad gana siempre.' },
+  { img: '/img/producto-local.jpg', cat: 'Socios', date: '20 may 2026', title: 'Nuevos comercios se unen a la asociación', text: 'Damos la bienvenida a las últimas tiendas que se han sumado al comercio de Narón.' },
+  { img: '/img/cafe.jpg', cat: 'Eventos', date: '12 may 2026', title: 'Vuelven las Noites de Verán a las calles comerciales', text: 'Música, terrazas y aperturas especiales durante todo el verano en Narón.' },
+  { img: '/img/panaderia.jpg', cat: 'Comercio local', date: '5 may 2026', title: 'El obrador tradicional, un tesoro del comercio naronés', text: 'Visitamos a los maestros panaderos que mantienen viva la repostería de siempre.' },
+  { img: '/img/escaparate.jpg', cat: 'Formación', date: '26 abr 2026', title: 'Taller gratuito de escaparatismo para socios', text: 'Aprende a montar escaparates que venden con nuestra próxima formación.' },
+  { img: '/img/mercado.jpg', cat: 'Institucional', date: '15 abr 2026', title: 'La asociación se reúne con el Ayuntamiento', text: 'Avanzamos en medidas para dinamizar y apoyar al comercio de proximidad.' },
+];
+
+const categorias = ['Todas', 'Comercio local', 'Campañas', 'Eventos', 'Socios', 'Formación', 'Institucional'];
+---
+<Layout title="Noticias | Comercio de Narón"
+        description="Noticias del comercio local de Narón: campañas, eventos, nuevos socios y novedades de la Asociación de Comerciantes.">
+
+  <PageHero eyebrow="Blog y actualidad"
+            title="Noticias del comercio de Narón"
+            subtitle="Campañas, eventos, nuevos socios y todo lo que mueve al comercio local." />
+
+  <section class="mx-auto max-w-6xl px-4 py-16">
+    <!-- Filtros de categoría (visual) -->
+    <div class="flex flex-wrap gap-2">
+      {categorias.map((c, i) => (
+        <span class={`rounded-full border border-brand-100 px-4 py-1.5 text-sm font-semibold ${i === 0 ? 'bg-brand text-white border-brand' : 'text-ink/70'}`}>{c}</span>
+      ))}
+    </div>
+
+    <!-- Destacada -->
+    <article class="mt-10 grid overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-soft lg:grid-cols-2">
+      <div class="relative min-h-64 overflow-hidden">
+        <img src={destacada.img} alt={destacada.title} class="h-full w-full object-cover" />
+      </div>
+      <div class="flex flex-col justify-center p-8 md:p-10">
+        <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wide">
+          <span class="rounded-full bg-accent px-3 py-1 text-brand-dark">{destacada.cat}</span>
+          <span class="flex items-center gap-1.5 text-ink/55"><Icon name="calendar" class="h-4 w-4" /> {destacada.date}</span>
+        </div>
+        <h2 class="mt-4 font-display text-3xl font-extrabold leading-tight">{destacada.title}</h2>
+        <p class="mt-4 text-ink/70">{destacada.text}</p>
+        <a href="#" class="mt-6 inline-flex w-fit items-center gap-2 font-bold text-brand hover:text-brand-dark">Leer noticia <Icon name="arrow" class="h-5 w-5" /></a>
+      </div>
+    </article>
+
+    <!-- Grid de noticias -->
+    <div class="mt-12 grid gap-7 md:grid-cols-3">
+      {noticias.map((n) => (
+        <article class="flex flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1">
+          <div class="relative h-44 overflow-hidden">
+            <img src={n.img} alt={n.title} loading="lazy" class="h-full w-full object-cover" />
+            <span class="absolute left-3 top-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{n.cat}</span>
+          </div>
+          <div class="flex flex-1 flex-col p-6">
+            <span class="flex items-center gap-1.5 text-xs font-medium text-ink/55"><Icon name="calendar" class="h-3.5 w-3.5" /> {n.date}</span>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug">{n.title}</h3>
+            <p class="mt-2 flex-1 text-sm text-ink/70">{n.text}</p>
+            <a href="#" class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand hover:text-brand-dark">Leer más <Icon name="arrow" class="h-4 w-4" /></a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <CTA title="¿Eres socio y tienes una novedad?"
+       text="Publicamos las noticias de nuestros comercios asociados. Cuéntanoslo."
+       ctaLabel="Contactar" ctaHref="/contacto" />
+</Layout>

@@ -1,0 +1,18 @@
+{
+  "name": "comercio-naron-web",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Web de la Asociación de Comerciantes de Narón - Astro + Tailwind + Netlify",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
+    "@tailwindcss/vite": "^4.0.0",
+    "astro": "^4.16.0",
+    "tailwindcss": "^4.0.0"
+  }
+}

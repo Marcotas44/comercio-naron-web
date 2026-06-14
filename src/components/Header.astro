@@ -1,0 +1,52 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+
+const links = [
+  { href: '/directorio', label: 'Directorio' },
+  { href: '/ventajas', label: 'Ventajas' },
+  { href: '/campanas', label: 'Campañas' },
+  { href: '/noticias', label: 'Noticias' },
+  { href: '/contacto', label: 'Contacto' },
+];
+---
+<!-- Barra institucional -->
+<div class="hidden bg-brand-dark text-white md:block">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-1.5 text-xs">
+    <p class="flex items-center gap-2 text-white/80">
+      <Icon name="store" class="h-3.5 w-3.5 text-accent-soft" />
+      Más de 90 comercios asociados en Narón
+    </p>
+    <div class="flex items-center gap-5 text-white/80">
+      <a href="tel:+34622086621" class="flex items-center gap-1.5 hover:text-white"><Icon name="phone" class="h-3.5 w-3.5" /> 622 086 621</a>
+      <a href="mailto:info@comerciodenaron.com" class="flex items-center gap-1.5 hover:text-white"><Icon name="mail" class="h-3.5 w-3.5" /> info@comerciodenaron.com</a>
+    </div>
+  </div>
+</div>
+
+<header class="sticky top-0 z-40 border-b border-brand-100/60 bg-cream/90 backdrop-blur">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+    <Logo />
+
+    <div class="hidden items-center gap-7 lg:flex">
+      {links.map((l) => (
+        <a href={l.href} class="text-sm font-semibold text-ink/75 transition hover:text-brand">{l.label}</a>
+      ))}
+      <a href="/hazte-socio" class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-bold text-white shadow-soft transition hover:bg-brand-dark">
+        Hazte socio <Icon name="arrow" class="h-4 w-4" />
+      </a>
+    </div>
+
+    <details class="lg:hidden">
+      <summary class="flex cursor-pointer list-none items-center rounded-lg border border-brand-100 p-2 text-brand">
+        <Icon name="store" class="h-5 w-5" /><span class="ml-1 text-sm font-bold">Menú</span>
+      </summary>
+      <div class="absolute left-0 right-0 top-full flex flex-col gap-1 border-t border-brand-100 bg-cream p-4 shadow-soft">
+        {links.map((l) => (
+          <a href={l.href} class="rounded-lg px-3 py-3 text-base font-semibold text-ink/80 hover:bg-white">{l.label}</a>
+        ))}
+        <a href="/hazte-socio" class="mt-2 rounded-full bg-brand px-5 py-3 text-center text-base font-bold text-white">Hazte socio</a>
+      </div>
+    </details>
+  </nav>
+</header>
