@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import CTA from '../components/CTA.astro';
 import Icon from '../components/Icon.astro';
+import dims from '../data/img-dims.json';
 
 const stats = [
   { n: '+90', l: 'comercios asociados' },
@@ -11,12 +12,12 @@ const stats = [
 ];
 
 const directorio = [
-  { name: 'Alimentación y frescos', img: '/img/fruteria.jpg', cat: 'Fruterías · Carnicerías · Pescaderías' },
-  { name: 'Panaderías y obradores', img: '/img/panaderia.jpg', cat: 'Pan artesano · Pastelería' },
-  { name: 'Moda y complementos', img: '/img/escaparate.jpg', cat: 'Ropa · Calzado · Bolsos' },
-  { name: 'Cafeterías y hostelería', img: '/img/cafe.jpg', cat: 'Cafés · Bares · Restaurantes' },
-  { name: 'Producto local', img: '/img/producto-local.jpg', cat: 'Artesanía · Gourmet' },
-  { name: 'Servicios y bienestar', img: '/img/mercado.jpg', cat: 'Peluquerías · Ópticas · Más' },
+  { name: 'Alimentación y frescos', img: '/img/fruteria.webp', cat: 'Fruterías · Carnicerías · Pescaderías' },
+  { name: 'Panaderías y obradores', img: '/img/panaderia.webp', cat: 'Pan artesano · Pastelería' },
+  { name: 'Moda y complementos', img: '/img/escaparate.webp', cat: 'Ropa · Calzado · Bolsos' },
+  { name: 'Cafeterías y hostelería', img: '/img/cafe.webp', cat: 'Cafés · Bares · Restaurantes' },
+  { name: 'Producto local', img: '/img/producto-local.webp', cat: 'Artesanía · Gourmet' },
+  { name: 'Servicios y bienestar', img: '/img/mercado.webp', cat: 'Peluquerías · Ópticas · Más' },
 ];
 
 const ventajas = [
@@ -27,20 +28,20 @@ const ventajas = [
 ];
 
 const campanas = [
-  { tag: 'En curso', img: '/img/evento.jpg', title: 'Sorteo de Primavera', date: 'Marzo – Junio 2026',
+  { tag: 'En curso', img: '/img/evento.webp', title: 'Sorteo de Primavera', date: 'Marzo – Junio 2026',
     text: 'Compra en los comercios asociados, consigue boletos y participa en el gran sorteo de premios.' },
-  { tag: 'Navidad', img: '/img/producto-local.jpg', title: 'Choiva de Agasallos', date: 'Diciembre 2025',
+  { tag: 'Navidad', img: '/img/producto-local.webp', title: 'Choiva de Agasallos', date: 'Diciembre 2025',
     text: 'La campaña estrella de Navidad: cientos de regalos para quienes compran en el comercio local.' },
-  { tag: 'Todo el año', img: '/img/fruteria.jpg', title: 'Comercio Aberto', date: 'Permanente',
+  { tag: 'Todo el año', img: '/img/fruteria.webp', title: 'Comercio Aberto', date: 'Permanente',
     text: 'Jornadas de puertas abiertas, descuentos y animación en las calles comerciales de Narón.' },
 ];
 
 const testimonios = [
-  { img: '/img/testimonio-2.jpg', name: 'Marta Vázquez', shop: 'Moda Atlántica',
+  { img: '/img/testimonio-2.webp', name: 'Marta Vázquez', shop: 'Moda Atlántica',
     quote: 'Desde que estamos en la asociación entran clientes nuevos cada semana. Las campañas conjuntas nos dan una visibilidad que solos no tendríamos.' },
-  { img: '/img/testimonio-1.jpg', name: 'Brais Lema', shop: 'Frutería A Horta',
+  { img: '/img/testimonio-1.webp', name: 'Brais Lema', shop: 'Frutería A Horta',
     quote: 'Por 6 euros al mes formo parte de algo que mueve a todo el comercio de Narón. La unión se nota en la calle y en la caja.' },
-  { img: '/img/testimonio-3.jpg', name: 'Diego Souto', shop: 'Cafetería O Recuncho',
+  { img: '/img/testimonio-3.webp', name: 'Diego Souto', shop: 'Cafetería O Recuncho',
     quote: 'Los sorteos y eventos llenan el barrio. Notamos el empujón en cada campaña y el trato con la directiva es cercano y rápido.' },
 ];
 ---
@@ -48,7 +49,7 @@ const testimonios = [
 <Layout>
   <!-- ===================== HERO ===================== -->
   <section class="relative isolate overflow-hidden">
-    <img src="/img/hero.jpg" alt="Comercio local de Narón" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+    <img src="/img/hero.webp" alt="Comercio local de Narón" width={dims["/img/hero.webp"]?.w} height={dims["/img/hero.webp"]?.h} fetchpriority="high" loading="eager" decoding="async" class="absolute inset-0 -z-10 h-full w-full object-cover" />
     <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-dark/95 via-brand-dark/80 to-brand-dark/40"></div>
 
     <div class="mx-auto max-w-6xl px-4 py-24 md:py-32">
@@ -125,7 +126,7 @@ const testimonios = [
       {directorio.map((c) => (
         <a href="/directorio" class="group overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1">
           <div class="relative h-52 overflow-hidden">
-            <img src={c.img} alt={c.name} loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+            <img src={c.img} alt={c.name} width={dims[c.img]?.w} height={dims[c.img]?.h} loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
             <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/55 to-transparent"></div>
             <h3 class="absolute bottom-3 left-4 right-4 font-display text-xl font-bold text-white">{c.name}</h3>
           </div>
@@ -153,7 +154,7 @@ const testimonios = [
         {campanas.map((c) => (
           <article class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-brand-100">
             <div class="relative h-44 overflow-hidden">
-              <img src={c.img} alt={c.title} loading="lazy" class="h-full w-full object-cover" />
+              <img src={c.img} alt={c.title} width={dims[c.img]?.w} height={dims[c.img]?.h} loading="lazy" class="h-full w-full object-cover" />
               <span class="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-xs font-bold text-brand-dark">{c.tag}</span>
             </div>
             <div class="flex flex-1 flex-col p-6">
@@ -187,7 +188,7 @@ const testimonios = [
         <a href="/hazte-socio" class="mt-8 inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 font-bold text-white shadow-soft transition hover:bg-brand-dark">Hazte socio <Icon name="arrow" class="h-5 w-5" /></a>
       </div>
       <div class="relative">
-        <img src="/img/boutique.jpg" alt="Comerciante asociado de Narón" class="aspect-[4/5] w-full rounded-3xl object-cover shadow-soft" />
+        <img src="/img/boutique.webp" alt="Comerciante asociado de Narón" width={dims["/img/boutique.webp"]?.w} height={dims["/img/boutique.webp"]?.h} loading="lazy" decoding="async" class="aspect-[4/5] w-full rounded-3xl object-cover shadow-soft" />
         <div class="absolute -bottom-6 -left-6 hidden rounded-2xl bg-white p-5 shadow-soft ring-1 ring-brand-100 sm:block">
           <div class="flex items-center gap-3">
             <div class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-50 text-brand"><Icon name="store" class="h-5 w-5" /></div>
@@ -217,7 +218,7 @@ const testimonios = [
               {[1,2,3,4,5].map(() => <Icon name="star" class="h-4 w-4" />)}
             </div>
             <figcaption class="mt-5 flex items-center gap-3 border-t border-white/10 pt-5">
-              <img src={t.img} alt={t.name} loading="lazy" class="h-12 w-12 rounded-full object-cover ring-2 ring-accent-soft/40" />
+              <img src={t.img} alt={t.name} width={dims[t.img]?.w} height={dims[t.img]?.h} loading="lazy" class="h-12 w-12 rounded-full object-cover ring-2 ring-accent-soft/40" />
               <div>
                 <div class="font-bold text-white">{t.name}</div>
                 <div class="text-sm text-white/60">{t.shop}</div>
@@ -232,7 +233,7 @@ const testimonios = [
   <!-- ===================== CARTA DE LA JUNTA ===================== -->
   <section class="mx-auto max-w-6xl px-4 py-20">
     <div class="grid items-center gap-10 rounded-3xl bg-cream p-8 ring-1 ring-brand-100 md:grid-cols-[auto_1fr] md:p-12">
-      <img src="/img/presidenta.jpg" alt="Junta directiva de la Asociación de Comerciantes de Narón" class="mx-auto h-40 w-40 rounded-2xl object-cover shadow-soft md:h-48 md:w-48" />
+      <img src="/img/presidenta.webp" alt="Junta directiva de la Asociación de Comerciantes de Narón" width={dims["/img/presidenta.webp"]?.w} height={dims["/img/presidenta.webp"]?.h} loading="lazy" decoding="async" class="mx-auto h-40 w-40 rounded-2xl object-cover shadow-soft md:h-48 md:w-48" />
       <div>
         <Icon name="quote" class="h-9 w-9 text-accent" />
         <p class="mt-3 font-display text-xl font-medium leading-relaxed text-ink md:text-2xl">

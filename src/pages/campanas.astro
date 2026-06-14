@@ -3,19 +3,20 @@ import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import CTA from '../components/CTA.astro';
 import Icon from '../components/Icon.astro';
+import dims from '../data/img-dims.json';
 
 const destacada = {
-  img: '/img/evento.jpg', tag: 'En curso', title: 'Sorteo de Primavera 2026', date: 'Del 21 de marzo al 21 de junio',
+  img: '/img/evento.webp', tag: 'En curso', title: 'Sorteo de Primavera 2026', date: 'Del 21 de marzo al 21 de junio',
   text: 'La gran campaña de primavera del comercio de Narón. Por cada compra en los comercios asociados recibes boletos para participar en el sorteo de cientos de premios. Cuanto más compras cerca, más oportunidades de ganar.',
 };
 
 const campanas = [
-  { img: '/img/producto-local.jpg', tag: 'Navidad', title: 'Choiva de Agasallos', date: 'Diciembre 2025', text: 'La campaña estrella de Navidad: lluvia de regalos para quienes compran en el comercio local.' },
-  { img: '/img/fruteria.jpg', tag: 'Permanente', title: 'Comercio Aberto', date: 'Todo el año', text: 'Jornadas de puertas abiertas, descuentos y animación en las calles comerciales.' },
-  { img: '/img/cafe.jpg', tag: 'Verano', title: 'Noites de Verán', date: 'Julio – Agosto', text: 'Aperturas especiales, música y terrazas para llenar de vida el comercio en verano.' },
-  { img: '/img/escaparate.jpg', tag: 'Otoño', title: 'Volta ao Cole', date: 'Septiembre', text: 'Promociones y sorteos para la vuelta al cole con el comercio de Narón.' },
-  { img: '/img/mercado.jpg', tag: 'Primavera', title: 'Mercado na Rúa', date: 'Mayo', text: 'Los comercios sacan su mejor producto a la calle en una gran feria local.' },
-  { img: '/img/boutique.jpg', tag: 'Rebajas', title: 'Días sin IVA', date: 'Enero y Julio', text: 'Jornadas de descuentos coordinados en los comercios asociados.' },
+  { img: '/img/producto-local.webp', tag: 'Navidad', title: 'Choiva de Agasallos', date: 'Diciembre 2025', text: 'La campaña estrella de Navidad: lluvia de regalos para quienes compran en el comercio local.' },
+  { img: '/img/fruteria.webp', tag: 'Permanente', title: 'Comercio Aberto', date: 'Todo el año', text: 'Jornadas de puertas abiertas, descuentos y animación en las calles comerciales.' },
+  { img: '/img/cafe.webp', tag: 'Verano', title: 'Noites de Verán', date: 'Julio – Agosto', text: 'Aperturas especiales, música y terrazas para llenar de vida el comercio en verano.' },
+  { img: '/img/escaparate.webp', tag: 'Otoño', title: 'Volta ao Cole', date: 'Septiembre', text: 'Promociones y sorteos para la vuelta al cole con el comercio de Narón.' },
+  { img: '/img/mercado.webp', tag: 'Primavera', title: 'Mercado na Rúa', date: 'Mayo', text: 'Los comercios sacan su mejor producto a la calle en una gran feria local.' },
+  { img: '/img/boutique.webp', tag: 'Rebajas', title: 'Días sin IVA', date: 'Enero y Julio', text: 'Jornadas de descuentos coordinados en los comercios asociados.' },
 ];
 ---
 <Layout title="Campañas y eventos | Comercio de Narón"
@@ -24,13 +25,13 @@ const campanas = [
   <PageHero eyebrow="Vida en las calles"
             title="Campañas y eventos del comercio"
             subtitle="Cada año movemos Narón con sorteos, ferias y promociones conjuntas. Esto es lo que viene."
-            image="/img/evento.jpg" />
+            image="/img/evento.webp" />
 
   <!-- DESTACADA -->
   <section class="mx-auto max-w-6xl px-4 py-16">
     <article class="grid overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-soft lg:grid-cols-2">
       <div class="relative min-h-64 overflow-hidden">
-        <img src={destacada.img} alt={destacada.title} class="h-full w-full object-cover" />
+        <img src={destacada.img} alt={destacada.title} width={dims[destacada.img]?.w} height={dims[destacada.img]?.h} class="h-full w-full object-cover" />
         <span class="absolute left-4 top-4 rounded-full bg-accent px-4 py-1.5 text-xs font-bold text-brand-dark">{destacada.tag}</span>
       </div>
       <div class="flex flex-col justify-center p-8 md:p-10">
@@ -50,7 +51,7 @@ const campanas = [
         {campanas.map((c) => (
           <article class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-brand-100">
             <div class="relative h-44 overflow-hidden">
-              <img src={c.img} alt={c.title} loading="lazy" class="h-full w-full object-cover" />
+              <img src={c.img} alt={c.title} width={dims[c.img]?.w} height={dims[c.img]?.h} loading="lazy" class="h-full w-full object-cover" />
               <span class="absolute left-3 top-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{c.tag}</span>
             </div>
             <div class="flex flex-1 flex-col p-6">

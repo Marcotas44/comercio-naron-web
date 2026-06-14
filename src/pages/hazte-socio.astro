@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
+import dims from '../data/img-dims.json';
 
 const pasos = [
   { n: '1', icon: 'mail', t: 'Rellenas el formulario', d: 'Solo lo esencial. Te lleva menos de un minuto.' },
@@ -22,7 +23,7 @@ const incluye = [
 
   <!-- HERO -->
   <section class="relative isolate overflow-hidden">
-    <img src="/img/escaparate.jpg" alt="Comercio de Narón" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+    <img src="/img/escaparate.webp" alt="Comercio de Narón" width={dims["/img/escaparate.webp"]?.w} height={dims["/img/escaparate.webp"]?.h} class="absolute inset-0 -z-10 h-full w-full object-cover" />
     <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-dark/95 to-brand-dark/70"></div>
     <div class="mx-auto max-w-6xl px-4 py-20 text-white md:py-28">
       <span class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em]">

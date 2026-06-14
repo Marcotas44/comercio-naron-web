@@ -3,20 +3,21 @@ import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import CTA from '../components/CTA.astro';
 import Icon from '../components/Icon.astro';
+import dims from '../data/img-dims.json';
 
 const destacada = {
-  img: '/img/evento.jpg', cat: 'Campañas', date: '2 de junio de 2026',
+  img: '/img/evento.webp', cat: 'Campañas', date: '2 de junio de 2026',
   title: 'Arranca el Sorteo de Primavera con cientos de premios',
   text: 'Más de 90 comercios de Narón se suman a la mayor campaña de la temporada. Te contamos cómo conseguir boletos y participar en el sorteo.',
 };
 
 const noticias = [
-  { img: '/img/fruteria.jpg', cat: 'Comercio local', date: '28 may 2026', title: 'Cinco razones para comprar fruta y verdura en tu barrio', text: 'Frescura, temporada y trato directo: por qué el producto de proximidad gana siempre.' },
-  { img: '/img/producto-local.jpg', cat: 'Socios', date: '20 may 2026', title: 'Nuevos comercios se unen a la asociación', text: 'Damos la bienvenida a las últimas tiendas que se han sumado al comercio de Narón.' },
-  { img: '/img/cafe.jpg', cat: 'Eventos', date: '12 may 2026', title: 'Vuelven las Noites de Verán a las calles comerciales', text: 'Música, terrazas y aperturas especiales durante todo el verano en Narón.' },
-  { img: '/img/panaderia.jpg', cat: 'Comercio local', date: '5 may 2026', title: 'El obrador tradicional, un tesoro del comercio naronés', text: 'Visitamos a los maestros panaderos que mantienen viva la repostería de siempre.' },
-  { img: '/img/escaparate.jpg', cat: 'Formación', date: '26 abr 2026', title: 'Taller gratuito de escaparatismo para socios', text: 'Aprende a montar escaparates que venden con nuestra próxima formación.' },
-  { img: '/img/mercado.jpg', cat: 'Institucional', date: '15 abr 2026', title: 'La asociación se reúne con el Ayuntamiento', text: 'Avanzamos en medidas para dinamizar y apoyar al comercio de proximidad.' },
+  { img: '/img/fruteria.webp', cat: 'Comercio local', date: '28 may 2026', title: 'Cinco razones para comprar fruta y verdura en tu barrio', text: 'Frescura, temporada y trato directo: por qué el producto de proximidad gana siempre.' },
+  { img: '/img/producto-local.webp', cat: 'Socios', date: '20 may 2026', title: 'Nuevos comercios se unen a la asociación', text: 'Damos la bienvenida a las últimas tiendas que se han sumado al comercio de Narón.' },
+  { img: '/img/cafe.webp', cat: 'Eventos', date: '12 may 2026', title: 'Vuelven las Noites de Verán a las calles comerciales', text: 'Música, terrazas y aperturas especiales durante todo el verano en Narón.' },
+  { img: '/img/panaderia.webp', cat: 'Comercio local', date: '5 may 2026', title: 'El obrador tradicional, un tesoro del comercio naronés', text: 'Visitamos a los maestros panaderos que mantienen viva la repostería de siempre.' },
+  { img: '/img/escaparate.webp', cat: 'Formación', date: '26 abr 2026', title: 'Taller gratuito de escaparatismo para socios', text: 'Aprende a montar escaparates que venden con nuestra próxima formación.' },
+  { img: '/img/mercado.webp', cat: 'Institucional', date: '15 abr 2026', title: 'La asociación se reúne con el Ayuntamiento', text: 'Avanzamos en medidas para dinamizar y apoyar al comercio de proximidad.' },
 ];
 
 const categorias = ['Todas', 'Comercio local', 'Campañas', 'Eventos', 'Socios', 'Formación', 'Institucional'];
@@ -39,7 +40,7 @@ const categorias = ['Todas', 'Comercio local', 'Campañas', 'Eventos', 'Socios',
     <!-- Destacada -->
     <article class="mt-10 grid overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-soft lg:grid-cols-2">
       <div class="relative min-h-64 overflow-hidden">
-        <img src={destacada.img} alt={destacada.title} class="h-full w-full object-cover" />
+        <img src={destacada.img} alt={destacada.title} width={dims[destacada.img]?.w} height={dims[destacada.img]?.h} class="h-full w-full object-cover" />
       </div>
       <div class="flex flex-col justify-center p-8 md:p-10">
         <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wide">
@@ -57,7 +58,7 @@ const categorias = ['Todas', 'Comercio local', 'Campañas', 'Eventos', 'Socios',
       {noticias.map((n) => (
         <article class="flex flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1">
           <div class="relative h-44 overflow-hidden">
-            <img src={n.img} alt={n.title} loading="lazy" class="h-full w-full object-cover" />
+            <img src={n.img} alt={n.title} width={dims[n.img]?.w} height={dims[n.img]?.h} loading="lazy" class="h-full w-full object-cover" />
             <span class="absolute left-3 top-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{n.cat}</span>
           </div>
           <div class="flex flex-1 flex-col p-6">

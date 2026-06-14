@@ -7,7 +7,12 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "import:comercios": "node scripts/import-comercios.mjs",
+    "import:imagenes": "node scripts/download-imagenes.mjs",
+    "optimize:imagenes": "node scripts/optimizar-imagenes.mjs",
+    "optimize:home": "node scripts/optimizar-home.mjs",
+    "dims:imagenes": "node scripts/dimensiones-imagenes.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

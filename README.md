@@ -84,11 +84,81 @@ Para desarrollo local: copia `.env.example` a `.env` y rellena la variable si la
 
 ---
 
+## Directorio: datos reales de comercios
+El directorio (`/directorio`) **NO usa datos ficticios**: se generan a partir de la web
+oficial `comerciodenaron.com` con un script importador.
+
+```bash
+npm run import:comercios     # = node scripts/import-comercios.mjs
+```
+
+Qué hace el script ([scripts/import-comercios.mjs](scripts/import-comercios.mjs)):
+1. Pagina `/listado-de-comercios/page/N/` y reúne **todos** los comercios (81 actualmente).
+2. Recorre los archivos de **sector** y **zona** para asignar categoría y ubicación a cada uno.
+3. Abre cada ficha `/Comercio/<slug>/` y extrae **nombre, dirección, teléfono, email, web e imagen**.
+4. Escribe **`src/data/comercios.json`** (ordenado por nombre).
+
+`src/data/comercios.ts` tipa esos datos y deriva las listas de categorías y zonas.
+La página lee de ahí, así que el **contador refleja el número real** de comercios cargados.
+
+### Imágenes de los comercios (locales)
+Las fotos reales se descargan al repo para no depender del servidor de WordPress:
+
+```bash
+npm run import:imagenes      # = node scripts/download-imagenes.mjs
+```
+
+[scripts/download-imagenes.mjs](scripts/download-imagenes.mjs) descarga cada imagen a
+`public/img/comercios/<slug>.<ext>` y reescribe `comercios.json` con la ruta local. Detalles:
+- **22** comercios tienen foto propia; se guardan con el **slug** como nombre y su extensión real (`.jpg`/`.png`/`.webp`).
+- Ignora el placeholder oficial del sitio (`unnamed.jpg` = “IMAGEN NO DISPONIBLE”), que 7 comercios reutilizan:
+  esos quedan **sin imagen** y muestran el placeholder de marca de la web.
+- **No descarga duplicados** (cachea por URL de origen).
+- Ejecútalo **después** de `import:comercios` (que regenera las URLs remotas).
+
+### Optimización a WebP (producción)
+```bash
+npm run optimize:imagenes    # = node scripts/optimizar-imagenes.mjs
+```
+
+[scripts/optimizar-imagenes.mjs](scripts/optimizar-imagenes.mjs) convierte las imágenes del
+directorio a **WebP** con `sharp` (calidad 80, anchura máx. 1000px) y actualiza `comercios.json`.
+- Si una conversión falla o **no reduce** el peso, conserva el original y su ruta (fallback).
+- Resultado real: **4,28 MB → 0,66 MB (-84,6%)**, 20 a WebP y 2 en fallback (.jpg).
+- Flujo completo de datos: `import:comercios` → `import:imagenes` → `optimize:imagenes`.
+
+### Optimización de las imágenes de portada
+```bash
+npm run optimize:home        # = node scripts/optimizar-home.mjs
+```
+[scripts/optimizar-home.mjs](scripts/optimizar-home.mjs) convierte a WebP las imágenes de
+`public/img/` (hero, secciones, campañas, testimonios) y **reescribe automáticamente** las rutas
+en `src/`. Resultado real: **2,23 MB → 1,28 MB (-42,6%)**, 13/13 convertidas.
+- El **hero** de la portada se sirve con `fetchpriority="high"` + `loading="eager"` (es el LCP).
+- El resto de imágenes usan `loading="lazy"`. Mismo flujo de fallback que el script anterior.
+
+### Dimensiones de imagen (anti-CLS)
+```bash
+npm run dims:imagenes        # = node scripts/dimensiones-imagenes.mjs
+```
+[scripts/dimensiones-imagenes.mjs](scripts/dimensiones-imagenes.mjs) mide el ancho×alto real de
+cada imagen y genera `src/data/img-dims.json`. Todas las páginas importan ese mapa y ponen
+`width`/`height` en cada `<img>` (`width={dims[src]?.w} height={dims[src]?.h}`), lo que reserva el
+espacio y **elimina el CLS** sin afectar al diseño responsive (las imágenes siguen con
+`object-cover` y clases `w-full`/`h-full`). Reejecuta este script si añades o cambias imágenes.
+
+Notas:
+- Si un comercio no publica un dato (teléfono, email, web, imagen…), el campo queda
+  vacío y la ficha muestra “No disponible” o simplemente oculta ese botón. **No se inventa nada.**
+- Requiere **Node 18+** (usa `fetch` global, sin dependencias).
+- Para refrescar el directorio cuando la asociación actualice su web, vuelve a ejecutar el comando
+  y haz commit del `comercios.json` resultante.
+
 ## ⚠️ Contenido a sustituir antes de publicar
 Esta es una **propuesta visual (demo)**. Antes de hacerla pública, reemplazar:
 - **Fotografías** (`public/img/`): ahora son fotos de stock que dan el tono correcto.
   Sustituir por **fotos reales de Narón**, sus comercios y escaparates.
-- **Comercios del directorio**, **noticias** y **fechas de campañas**: son datos de muestra.
+- **Noticias** y **fechas de campañas**: son datos de muestra (el **directorio ya es real**, ver sección anterior).
 - **Testimonios** y **carta de la Junta**: nombres y citas de ejemplo → poner los reales con autorización.
 - **Logo/emblema** (`src/components/Logo.astro`): provisional; sustituir por el oficial si existe.
 
