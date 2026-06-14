@@ -1,6 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
+import { totalComercios } from '../data/comercios';
 const year = new Date().getFullYear();
 ---
 <footer class="bg-brand-dark text-white">
@@ -13,9 +14,13 @@ const year = new Date().getFullYear();
       </div>
       <form id="newsletter-form" class="w-full max-w-md">
         <div class="flex gap-2">
-          <input type="email" required placeholder="Tu email" class="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder-white/50 outline-none focus:border-accent" />
+          <input type="email" required aria-label="Tu email para la newsletter" placeholder="Tu email" class="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder-white/50 outline-none focus:border-accent" />
           <button class="rounded-full bg-accent px-5 py-3 text-sm font-bold text-brand-dark hover:bg-accent-soft">Suscribirme</button>
         </div>
+        <label class="mt-2 flex items-start gap-2 text-left text-[11px] leading-snug text-white/60">
+          <input required type="checkbox" name="rgpd" aria-label="Acepto la política de privacidad" class="mt-0.5" />
+          <span>Acepto la <a href="/politica-privacidad" class="text-accent-soft underline">política de privacidad</a> y recibir comunicaciones de la asociación.</span>
+        </label>
         <p id="newsletter-msg" class="mt-2 hidden text-sm font-medium text-accent-soft"></p>
       </form>
     </div>
@@ -24,7 +29,7 @@ const year = new Date().getFullYear();
   <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-4">
     <div class="md:col-span-1">
       <Logo variant="light" />
-      <p class="mt-4 text-sm text-white/70">Más de 90 comercios locales unidos para hacer de Narón un lugar mejor para comprar y vivir.</p>
+      <p class="mt-4 text-sm text-white/70">{totalComercios} comercios locales unidos para hacer de Narón un lugar mejor para comprar y vivir.</p>
     </div>
 
     <div>
@@ -53,8 +58,20 @@ const year = new Date().getFullYear();
     </div>
   </div>
 
+  <!-- Enlaces legales -->
+  <div class="border-t border-white/10">
+    <div class="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-5 gap-y-2 px-4 py-5 text-xs text-white/60">
+      <a class="hover:text-accent-soft" href="/aviso-legal">Aviso legal</a>
+      <a class="hover:text-accent-soft" href="/politica-privacidad">Privacidad</a>
+      <a class="hover:text-accent-soft" href="/politica-cookies">Cookies</a>
+      <a class="hover:text-accent-soft" href="/terminos-condiciones">Términos y condiciones</a>
+      <a class="hover:text-accent-soft" href="/proteccion-datos">Protección de datos</a>
+      <a class="hover:text-accent-soft" href="/transparencia">Transparencia</a>
+    </div>
+  </div>
+
   <div class="border-t border-white/10 py-5 text-center text-xs text-white/50">
-    © {year} Asociación de Comerciantes de Narón · Aviso legal · Política de privacidad · Cookies
+    © {year} Asociación de Comerciantes de Narón. Todos los derechos reservados.
   </div>
 </footer>
 
@@ -65,7 +82,15 @@ const year = new Date().getFullYear();
   const nm = document.getElementById('newsletter-msg');
   nf?.addEventListener('submit', (e) => {
     e.preventDefault();
+    // RGPD obligatorio: no se envía sin consentimiento.
+    if (!nf.querySelector('input[name="rgpd"]').checked) {
+      nm.className = 'mt-2 text-sm font-medium text-accent-soft';
+      nm.textContent = 'Debes aceptar la política de privacidad para suscribirte.';
+      nm.classList.remove('hidden');
+      return;
+    }
     nf.reset();
+    nm.className = 'mt-2 text-sm font-medium text-accent-soft';
     nm.textContent = WEBHOOK
       ? '✅ ¡Suscripción recibida! Gracias.'
       : '✅ ¡Gracias! La suscripción se activará al conectar el sistema.';

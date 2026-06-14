@@ -131,7 +131,8 @@ function parseFicha(html) {
   let web = '';
   const webm = [...text.matchAll(/https?:\/\/[^\s"'<)]+/gi)]
     .map((m) => m[0]).filter((u) => !/comerciodenaron\.com/i.test(u));
-  if (webm.length) web = webm[0].replace(/[.,]$/, '');
+  if (webm.length) web = webm[0].replace(/%20/g, '').replace(/\s+/g, '').replace(/[.,;]+$/, '');
+  if (email) email = email.replace(/%20/g, '').replace(/\s+/g, '').trim();
 
   // Imagen propia: primera imagen de uploads antes de "Comercios similares", sin logos
   let imagen = '';

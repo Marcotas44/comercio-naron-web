@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import CTA from '../components/CTA.astro';
+import { totalComercios } from '../data/comercios';
 
 const canales = [
   { icon: 'whatsapp', t: 'WhatsApp', d: 'Respuesta rápida', href: 'https://wa.me/34622086621', cta: 'Abrir chat' },
@@ -38,20 +39,21 @@ const canales = [
         <form id="contacto-form" class="mt-6 grid gap-4">
           <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
           <div class="grid gap-4 sm:grid-cols-2">
-            <input required name="nombre" placeholder="Nombre" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
-            <input required name="email" type="email" placeholder="Email" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="nombre" aria-label="Nombre" placeholder="Nombre" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="email" type="email" aria-label="Email" placeholder="Email" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
           </div>
-          <input name="telefono" type="tel" placeholder="Teléfono (opcional)" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
-          <select required name="motivo" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+          <input name="telefono" type="tel" aria-label="Teléfono (opcional)" placeholder="Teléfono (opcional)" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+          <select required name="motivo" aria-label="Motivo de tu consulta" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
             <option value="">Motivo de tu consulta</option>
             <option>Quiero asociarme</option>
             <option>Soy vecino / consulta general</option>
             <option>Prensa / colaboraciones</option>
             <option>Otro</option>
           </select>
-          <textarea required name="mensaje" rows="4" placeholder="Tu mensaje" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand"></textarea>
+          <textarea required name="mensaje" rows="4" aria-label="Tu mensaje" placeholder="Tu mensaje" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand"></textarea>
           <label class="flex items-start gap-2 text-xs text-ink/60">
-            <input required type="checkbox" name="rgpd" class="mt-1" /> Acepto la política de privacidad y el tratamiento de mis datos.
+            <input required type="checkbox" name="rgpd" aria-label="Acepto la política de privacidad" class="mt-1" />
+            <span>He leído y acepto la <a href="/politica-privacidad" class="font-semibold text-brand underline">política de privacidad</a> y la información de <a href="/proteccion-datos" class="font-semibold text-brand underline">protección de datos</a>, y consiento el tratamiento de mis datos.</span>
           </label>
           <button class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 font-bold text-brand-dark shadow transition hover:bg-accent-soft">
             Enviar mensaje <Icon name="arrow" class="h-5 w-5" />
@@ -68,7 +70,7 @@ const canales = [
             <li class="flex items-center gap-2"><Icon name="mappin" class="h-4 w-4 text-brand" /> Narón, A Coruña (Galicia)</li>
             <li class="flex items-center gap-2"><Icon name="phone" class="h-4 w-4 text-brand" /> 622 086 621</li>
             <li class="flex items-center gap-2"><Icon name="mail" class="h-4 w-4 text-brand" /> info@comerciodenaron.com</li>
-            <li class="flex items-center gap-2"><Icon name="users" class="h-4 w-4 text-brand" /> +90 comercios asociados</li>
+            <li class="flex items-center gap-2"><Icon name="users" class="h-4 w-4 text-brand" /> {totalComercios} comercios asociados</li>
           </ul>
         </div>
         <div class="flex-1 overflow-hidden rounded-3xl border border-brand-100 shadow-soft">
@@ -91,6 +93,14 @@ const canales = [
       e.preventDefault();
       const data = Object.fromEntries(new FormData(form));
       if (data.website) return; // honeypot
+
+      // RGPD obligatorio: no se envía sin consentimiento.
+      if (!data.rgpd) {
+        msg.className = 'text-center text-sm font-medium text-red-600';
+        msg.textContent = 'Debes aceptar la política de privacidad para continuar.';
+        msg.classList.remove('hidden');
+        return;
+      }
 
       // Modo demo: sin webhook configurado, no se envía nada a ningún servidor.
       if (!N8N_WEBHOOK) {

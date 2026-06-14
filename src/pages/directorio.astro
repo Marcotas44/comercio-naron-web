@@ -19,14 +19,14 @@ import dims from '../data/img-dims.json';
       <div class="grid gap-3 md:grid-cols-3">
         <div class="relative md:col-span-1">
           <Icon name="search" class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/40" />
-          <input id="buscar" type="search" placeholder="Buscar por nombre…"
+          <input id="buscar" type="search" aria-label="Buscar comercio por nombre" placeholder="Buscar por nombre…"
                  class="w-full rounded-xl border border-brand-100 py-3 pl-12 pr-4 outline-none focus:border-brand" />
         </div>
-        <select id="filtro-cat" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+        <select id="filtro-cat" aria-label="Filtrar por categoría" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
           <option value="">Todas las categorías</option>
           {categorias.map((c) => <option value={c}>{c}</option>)}
         </select>
-        <select id="filtro-zona" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+        <select id="filtro-zona" aria-label="Filtrar por zona" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
           <option value="">Todas las zonas</option>
           {zonas.map((z) => <option value={z}>{z}</option>)}
         </select>
@@ -42,32 +42,30 @@ import dims from '../data/img-dims.json';
         return (
           <article class="card flex flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1"
                    data-cat={c.categoria} data-zona={c.zona} data-name={c.nombre.toLowerCase()}>
-            <div class="relative h-40 overflow-hidden">
+            <a href={`/comercio/${c.slug}`} class="relative block h-40 overflow-hidden" aria-label={`Ver ficha de ${c.nombre}`}>
               {c.imagen ? (
-                <img src={c.imagen} alt={c.nombre} width={dims[c.imagen]?.w} height={dims[c.imagen]?.h} loading="lazy" class="h-full w-full object-cover" />
+                <img src={c.imagen} alt={c.nombre} width={dims[c.imagen]?.w} height={dims[c.imagen]?.h} loading="lazy" class="h-full w-full object-cover transition duration-500 hover:scale-105" />
               ) : (
                 <div class="flex h-full w-full items-center justify-center bg-brand-50">
                   <Icon name="store" class="h-10 w-10 text-brand/40" />
                 </div>
               )}
               {c.categoria && <span class="absolute left-3 top-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{c.categoria}</span>}
-            </div>
+            </a>
             <div class="flex flex-1 flex-col p-5">
-              <h3 class="font-display text-lg font-bold leading-snug">{c.nombre}</h3>
+              <h3 class="font-display text-lg font-bold leading-snug">
+                <a href={`/comercio/${c.slug}`} class="hover:text-brand">{c.nombre}</a>
+              </h3>
               <p class="mt-1.5 flex items-start gap-1.5 text-xs font-medium text-ink/55">
                 <Icon name="mappin" class="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <span>{c.direccion || 'Dirección no disponible'}{c.zona ? ` · ${c.zona}` : ''}</span>
               </p>
 
               <div class="mt-4 flex flex-1 flex-wrap items-end gap-2">
-                {tel && (
-                  <>
-                    <a href={`https://wa.me/34${tel}`} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand hover:bg-brand-100"><Icon name="whatsapp" class="h-4 w-4" /> WhatsApp</a>
-                    <a href={`tel:+34${tel}`} class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand hover:bg-brand-100"><Icon name="phone" class="h-4 w-4" /> Llamar</a>
-                  </>
-                )}
-                {c.email && <a href={`mailto:${c.email}`} class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand hover:bg-brand-100"><Icon name="mail" class="h-4 w-4" /> Email</a>}
+                {tel && <a href={`https://wa.me/34${tel}`} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand hover:bg-brand-100"><Icon name="whatsapp" class="h-4 w-4" /> WhatsApp</a>}
+                {tel && <a href={`tel:+34${tel}`} class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand hover:bg-brand-100"><Icon name="phone" class="h-4 w-4" /> Llamar</a>}
                 {c.web && <a href={c.web} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand hover:bg-brand-100"><Icon name="arrow" class="h-4 w-4" /> Web</a>}
+                <a href={`/comercio/${c.slug}`} class="inline-flex items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-dark">Ver ficha <Icon name="arrow" class="h-4 w-4" /></a>
               </div>
             </div>
           </article>

@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import { ENTIDAD } from '../data/asociacion';
+---
+<Layout title="Protección de datos | Comercio de Narón"
+        description="Explicación clara y sencilla de qué datos pedimos en los formularios, para qué los usamos y cómo ejercer tus derechos.">
+  <PageHero eyebrow="En lenguaje claro" title="Protección de datos"
+            subtitle="Tus datos, explicados de forma sencilla: qué pedimos, para qué y qué puedes hacer." />
+
+  <section class="mx-auto max-w-6xl px-4 py-16">
+    <article class="prose-legal">
+      <p><em>Última actualización: <span class="ph">{ENTIDAD.actualizacion}</span></em></p>
+
+      <p>Esta página resume, en lenguaje sencillo, cómo tratamos tus datos. La versión completa y legal está
+      en la <a href="/politica-privacidad">Política de privacidad</a>.</p>
+
+      <h2>¿Qué datos te pedimos?</h2>
+      <ul>
+        <li><strong>Si nos escribes (contacto):</strong> tu nombre, email, teléfono (opcional) y tu mensaje.</li>
+        <li><strong>Si solicitas el alta como socio:</strong> tu nombre, el del comercio, teléfono, email,
+        sector y zona.</li>
+        <li><strong>Si te suscribes a la newsletter:</strong> solo tu email.</li>
+      </ul>
+      <p>Pedimos lo mínimo imprescindible. No solicitamos datos sensibles.</p>
+
+      <h2>¿Para qué los usamos?</h2>
+      <ul>
+        <li>Para responderte y atender tu consulta.</li>
+        <li>Para gestionar tu solicitud de alta y la relación como socio.</li>
+        <li>Para enviarte información de campañas, eventos y novedades, si lo has aceptado.</li>
+      </ul>
+      <p>No vendemos tus datos ni los cedemos a terceros para fines ajenos.</p>
+
+      <h2>¿Cómo gestionamos las altas de socios?</h2>
+      <p>Cuando envías el formulario de alta, recibimos tu solicitud y te contactamos para confirmar los datos
+      y explicarte los siguientes pasos (incluida la cuota de 6 €/mes). El envío del formulario es una
+      solicitud: no implica el alta automática.</p>
+
+      <h2>¿Y las automatizaciones (n8n)?</h2>
+      <p>En el futuro, para agilizar la gestión, las solicitudes podrían procesarse automáticamente con
+      herramientas como <strong>n8n</strong>: por ejemplo, registrar tu solicitud, enviarte un email de
+      confirmación o avisar a la junta. Estas herramientas actuarían como <strong>encargadas del
+      tratamiento</strong>, tratando tus datos solo para estas finalidades y con las garantías del RGPD. Si se
+      conectara un CRM o un servicio de email, se aplicaría lo mismo. <em>Actualmente, en esta demostración,
+      ningún formulario envía datos a servidores externos.</em></p>
+
+      <h2>¿Qué derechos tienes?</h2>
+      <p>Puedes <strong>acceder</strong> a tus datos, <strong>rectificarlos</strong>, <strong>suprimirlos</strong>,
+      <strong>oponerte</strong> a su tratamiento, <strong>limitarlo</strong>, pedir su <strong>portabilidad</strong>
+      y <strong>retirar tu consentimiento</strong> cuando quieras.</p>
+
+      <h2>¿Cómo los ejerces?</h2>
+      <p>Escríbenos a <span class="ph">{ENTIDAD.emailLegal}</span> indicando qué quieres hacer. También puedes
+      reclamar ante la <a href="https://www.aepd.es" target="_blank" rel="noopener">Agencia Española de
+      Protección de Datos</a> si consideras que no hemos atendido tu derecho.</p>
+
+      <p class="mt-8 rounded-xl bg-brand-50 p-4 text-sm">⚠️ <strong>Texto en revisión:</strong> base inicial
+      pendiente de validación por la asociación o un asesor legal antes de su publicación definitiva.</p>
+    </article>
+  </section>
+</Layout>

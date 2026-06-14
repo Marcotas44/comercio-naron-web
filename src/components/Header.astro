@@ -1,6 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
+import { totalComercios } from '../data/comercios';
 
 const links = [
   { href: '/directorio', label: 'Directorio' },
@@ -15,7 +16,7 @@ const links = [
   <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-1.5 text-xs">
     <p class="flex items-center gap-2 text-white/80">
       <Icon name="store" class="h-3.5 w-3.5 text-accent-soft" />
-      Más de 90 comercios asociados en Narón
+      {totalComercios} comercios asociados en Narón
     </p>
     <div class="flex items-center gap-5 text-white/80">
       <a href="tel:+34622086621" class="flex items-center gap-1.5 hover:text-white"><Icon name="phone" class="h-3.5 w-3.5" /> 622 086 621</a>

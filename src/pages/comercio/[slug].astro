@@ -1,0 +1,154 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CTA from '../../components/CTA.astro';
+import Icon from '../../components/Icon.astro';
+import { comercios, soloDigitos } from '../../data/comercios';
+import dims from '../../data/img-dims.json';
+
+export function getStaticPaths() {
+  return comercios.map((c) => ({ params: { slug: c.slug }, props: { comercio: c } }));
+}
+
+const { comercio: c } = Astro.props;
+const tel = soloDigitos(c.telefono);
+const dim = c.imagen ? dims[c.imagen] : null;
+
+// Comercios relacionados (misma categoría, excluyendo el actual)
+const relacionados = comercios
+  .filter((o) => o.slug !== c.slug && o.categoria && o.categoria === c.categoria)
+  .slice(0, 3);
+
+const mapQuery = encodeURIComponent(c.direccion || `${c.nombre}, Narón`);
+
+// Schema.org del comercio
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Store',
+  name: c.nombre,
+  ...(c.imagen ? { image: new URL(c.imagen, Astro.site).toString() } : {}),
+  ...(c.categoria ? { description: `${c.categoria} en Narón` } : {}),
+  ...(c.telefono ? { telephone: `+34${tel}` } : {}),
+  ...(c.email ? { email: c.email } : {}),
+  ...(c.web ? { url: c.web } : {}),
+  address: {
+    '@type': 'PostalAddress',
+    ...(c.direccion ? { streetAddress: c.direccion } : {}),
+    addressLocality: 'Narón',
+    addressRegion: 'A Coruña',
+    addressCountry: 'ES',
+  },
+  areaServed: 'Narón',
+  isPartOf: { '@type': 'Organization', name: 'Asociación de Comerciantes de Narón' },
+};
+
+const metaDesc = `${c.nombre}${c.categoria ? ` · ${c.categoria}` : ''} en Narón.${c.direccion ? ` ${c.direccion}.` : ''} Comercio local asociado a la Asociación de Comerciantes de Narón.`;
+---
+<Layout title={`${c.nombre} | Comercio de Narón`} description={metaDesc}
+        image={c.imagen || '/img/hero.webp'} schemaExtra={schema}>
+
+  <!-- Migas -->
+  <nav aria-label="Migas de pan" class="border-b border-brand-100 bg-cream">
+    <ol class="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 py-4 text-sm text-ink/60">
+      <li><a href="/" class="hover:text-brand">Inicio</a></li>
+      <li aria-hidden="true">/</li>
+      <li><a href="/directorio" class="hover:text-brand">Directorio</a></li>
+      <li aria-hidden="true">/</li>
+      <li class="font-semibold text-ink/80" aria-current="page">{c.nombre}</li>
+    </ol>
+  </nav>
+
+  <section class="mx-auto max-w-6xl px-4 py-12">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <!-- Imagen -->
+      <div class="overflow-hidden rounded-3xl border border-brand-100 shadow-soft">
+        {c.imagen ? (
+          <img src={c.imagen} alt={`Comercio ${c.nombre} en Narón`} width={dim?.w} height={dim?.h}
+               class="h-full max-h-[28rem] w-full object-cover" />
+        ) : (
+          <div class="flex h-72 w-full flex-col items-center justify-center gap-3 bg-brand-50 text-brand/50">
+            <Icon name="store" class="h-14 w-14" />
+            <span class="text-sm font-medium">Foto no disponible</span>
+          </div>
+        )}
+      </div>
+
+      <!-- Datos -->
+      <div>
+        {c.categoria && <span class="inline-block rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{c.categoria}</span>}
+        <h1 class="mt-3 font-display text-3xl font-black md:text-4xl">{c.nombre}</h1>
+
+        <ul class="mt-6 space-y-3 text-ink/80">
+          <li class="flex items-start gap-3">
+            <Icon name="mappin" class="mt-0.5 h-5 w-5 shrink-0 text-brand" />
+            <span>{c.direccion || 'Dirección no disponible'}{c.zona ? ` · ${c.zona}` : ''}</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <Icon name="phone" class="h-5 w-5 shrink-0 text-brand" />
+            {c.telefono ? <a href={`tel:+34${tel}`} class="hover:text-brand">{c.telefono}</a> : <span class="text-ink/50">Teléfono no disponible</span>}
+          </li>
+          <li class="flex items-center gap-3">
+            <Icon name="mail" class="h-5 w-5 shrink-0 text-brand" />
+            {c.email ? <a href={`mailto:${c.email}`} class="break-all hover:text-brand">{c.email}</a> : <span class="text-ink/50">Email no disponible</span>}
+          </li>
+          <li class="flex items-center gap-3">
+            <Icon name="arrow" class="h-5 w-5 shrink-0 text-brand" />
+            {c.web ? <a href={c.web} target="_blank" rel="noopener" class="break-all hover:text-brand">{c.web.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a> : <span class="text-ink/50">Web no disponible</span>}
+          </li>
+        </ul>
+
+        <!-- CTA de contacto -->
+        <div class="mt-8 flex flex-wrap gap-3">
+          {tel && <a href={`https://wa.me/34${tel}`} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-bold text-white shadow-soft transition hover:bg-brand-dark"><Icon name="whatsapp" class="h-5 w-5" /> WhatsApp</a>}
+          {tel && <a href={`tel:+34${tel}`} class="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-6 py-3 font-bold text-brand transition hover:bg-brand-50"><Icon name="phone" class="h-5 w-5" /> Llamar</a>}
+          {c.web && <a href={c.web} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-6 py-3 font-bold text-brand transition hover:bg-brand-50"><Icon name="arrow" class="h-5 w-5" /> Visitar web</a>}
+          {!tel && !c.web && c.email && <a href={`mailto:${c.email}`} class="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-bold text-white transition hover:bg-brand-dark"><Icon name="mail" class="h-5 w-5" /> Enviar email</a>}
+        </div>
+
+        <a href={`https://www.google.com/maps?q=${mapQuery}`} target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand-dark">
+          <Icon name="mappin" class="h-4 w-4" /> Cómo llegar
+        </a>
+      </div>
+    </div>
+
+    <!-- Mapa -->
+    <div class="mt-10 overflow-hidden rounded-3xl border border-brand-100 shadow-soft">
+      <iframe title={`Ubicación de ${c.nombre} en Narón`} src={`https://www.google.com/maps?q=${mapQuery}&output=embed`} class="h-72 w-full" loading="lazy"></iframe>
+    </div>
+
+    <p class="mt-8">
+      <a href="/directorio" class="inline-flex items-center gap-1.5 font-semibold text-brand hover:text-brand-dark">← Volver al directorio</a>
+    </p>
+  </section>
+
+  {relacionados.length > 0 && (
+    <section class="bg-cream bg-grid">
+      <div class="mx-auto max-w-6xl px-4 py-16">
+        <h2 class="rule-accent font-display text-2xl font-extrabold md:text-3xl">Otros comercios de {c.categoria}</h2>
+        <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {relacionados.map((o) => {
+            const od = o.imagen ? dims[o.imagen] : null;
+            return (
+              <a href={`/comercio/${o.slug}`} class="group overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1">
+                <div class="relative h-40 overflow-hidden">
+                  {o.imagen ? (
+                    <img src={o.imagen} alt={o.nombre} width={od?.w} height={od?.h} loading="lazy" class="h-full w-full object-cover" />
+                  ) : (
+                    <div class="flex h-full w-full items-center justify-center bg-brand-50"><Icon name="store" class="h-10 w-10 text-brand/40" /></div>
+                  )}
+                </div>
+                <div class="p-5">
+                  <h3 class="font-display text-lg font-bold">{o.nombre}</h3>
+                  <p class="mt-1 text-sm text-ink/60">{o.zona || 'Narón'}</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CTA title="¿Tu comercio aún no está aquí?"
+       text="Date de alta en la asociación y consigue tu ficha en el directorio de Narón."
+       ctaLabel="Hazte socio" ctaHref="/hazte-socio" />
+</Layout>

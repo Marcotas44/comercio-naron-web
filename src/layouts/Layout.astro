@@ -3,17 +3,20 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { totalComercios } from '../data/comercios';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  schemaExtra?: object | null;
 }
 
 const {
-  title = 'Comercio de Narón | +90 tiendas locales',
-  description = 'Asociación de Comerciantes de Narón. Encuentra más de 90 comercios locales y asóciate desde 6€/mes para hacer crecer tu negocio.',
+  title = `Comercio de Narón | ${totalComercios} tiendas locales`,
+  description = `Asociación de Comerciantes de Narón. Encuentra los ${totalComercios} comercios locales asociados y asóciate desde 6€/mes para hacer crecer tu negocio.`,
   image = '/img/hero.webp',
+  schemaExtra = null,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
@@ -63,6 +66,7 @@ const schema = {
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    {schemaExtra && <script type="application/ld+json" set:html={JSON.stringify(schemaExtra)} />}
   </head>
   <body class="bg-white text-ink antialiased">
     <Header />

@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import CTA from '../components/CTA.astro';
 import Icon from '../components/Icon.astro';
+import { totalComercios } from '../data/comercios';
 
 const ventajas = [
   { icon: 'megaphone', title: 'Más visibilidad', text: 'Ficha en el directorio online y presencia en todas las campañas y redes de la asociación.' },
@@ -10,7 +11,7 @@ const ventajas = [
   { icon: 'users', title: 'Representación', text: 'Una voz fuerte ante el Ayuntamiento y las administraciones para defender tus intereses.' },
   { icon: 'shield', title: 'Respaldo y formación', text: 'Asesoramiento, formación y el apoyo de una asociación consolidada en Narón.' },
   { icon: 'sparkles', title: 'Identidad común', text: 'Material e imagen corporativa que refuerzan la marca “Comercio de Narón”.' },
-  { icon: 'heart', title: 'Comunidad', text: 'Más de 90 comercios que comparten ideas, proveedores y se ayudan entre sí.' },
+  { icon: 'heart', title: 'Comunidad', text: `${totalComercios} comercios que comparten ideas, proveedores y se ayudan entre sí.` },
 ];
 
 const solo = [
@@ -20,7 +21,7 @@ const solo = [
   'Sin presencia en campañas ni sorteos',
 ];
 const asociado = [
-  'Formas parte de una marca de +90 comercios',
+  `Formas parte de una marca de ${totalComercios} comercios`,
   'Marketing y campañas compartidas',
   'Representación institucional colectiva',
   'Apareces en el directorio y todos los eventos',
@@ -32,7 +33,7 @@ const incluye = [
   'Material e identidad corporativa de la asociación',
   'Representación ante el Ayuntamiento y administraciones',
   'Formación y asesoramiento para tu negocio',
-  'Una comunidad de +90 comercios que reman contigo',
+  `Una comunidad de ${totalComercios} comercios que reman contigo`,
 ];
 
 const faqs = [
@@ -43,7 +44,7 @@ const faqs = [
 ];
 ---
 <Layout title="Ventajas de asociarse | Comercio de Narón"
-        description="Descubre por qué más de 90 comercios de Narón forman parte de la asociación: visibilidad, campañas conjuntas, representación y comunidad desde 6€/mes.">
+        description={`Descubre por qué ${totalComercios} comercios de Narón forman parte de la asociación: visibilidad, campañas conjuntas, representación y comunidad desde 6€/mes.`}>
 
   <PageHero eyebrow="Para comerciantes"
             title="Por qué asociarse merece la pena"
@@ -132,7 +133,7 @@ const faqs = [
     </div>
   </section>
 
-  <CTA title="Súmate a los +90 comercios que ya forman parte"
+  <CTA title={`Súmate a los ${totalComercios} comercios que ya forman parte`}
        text="Te acompañamos en todo el proceso de alta. Tardas menos de un minuto."
        ctaLabel="Hazte socio" ctaHref="/hazte-socio" />
 </Layout>

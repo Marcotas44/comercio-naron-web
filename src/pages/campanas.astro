@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import CTA from '../components/CTA.astro';
 import Icon from '../components/Icon.astro';
+import DemoNotice from '../components/DemoNotice.astro';
 import dims from '../data/img-dims.json';
 
 const destacada = {
@@ -26,6 +27,8 @@ const campanas = [
             title="Campañas y eventos del comercio"
             subtitle="Cada año movemos Narón con sorteos, ferias y promociones conjuntas. Esto es lo que viene."
             image="/img/evento.webp" />
+
+  <DemoNotice text="Las campañas y fechas mostradas son ilustrativas y no corresponden a convocatorias reales de la asociación." />
 
   <!-- DESTACADA -->
   <section class="mx-auto max-w-6xl px-4 py-16">

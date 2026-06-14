@@ -1,0 +1,66 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import { ENTIDAD } from '../data/asociacion';
+---
+<Layout title="Términos y condiciones | Comercio de Narón"
+        description="Términos y condiciones de uso del sitio web y del directorio de la Asociación de Comerciantes de Narón.">
+  <PageHero eyebrow="Condiciones de uso" title="Términos y condiciones"
+            subtitle="Reglas de uso del sitio web, del directorio y de las solicitudes de alta." />
+
+  <section class="mx-auto max-w-6xl px-4 py-16">
+    <article class="prose-legal">
+      <p><em>Última actualización: <span class="ph">{ENTIDAD.actualizacion}</span></em></p>
+
+      <h2>1. Uso del sitio</h2>
+      <p>El uso de este sitio web implica la aceptación de los presentes términos y condiciones, del
+      <a href="/aviso-legal">Aviso legal</a> y de la <a href="/politica-privacidad">Política de privacidad</a>.
+      La persona usuaria se compromete a utilizar el sitio conforme a la ley y la buena fe.</p>
+
+      <h2>2. Uso del directorio</h2>
+      <p>El directorio de comercios tiene finalidad informativa y de promoción del comercio local. La
+      información se ofrece «tal cual» y puede no estar siempre actualizada. El directorio no debe utilizarse
+      para extraer datos de forma masiva (scraping), elaborar bases de datos comerciales ni enviar
+      comunicaciones no solicitadas a los comercios listados.</p>
+
+      <h2>3. Información de los comercios</h2>
+      <p>Los datos de cada comercio proceden de la información facilitada por el propio comercio o por la
+      asociación. Cualquier comercio que desee corregir o eliminar su información puede solicitarlo escribiendo
+      a <span class="ph">{ENTIDAD.emailLegal}</span>.</p>
+
+      <h2>4. Limitación de responsabilidad</h2>
+      <p>El titular no garantiza la disponibilidad continua del sitio ni la ausencia de errores, y no se
+      responsabiliza de los daños derivados del uso del sitio, de la información del directorio o de los enlaces
+      a sitios de terceros.</p>
+
+      <h2>5. Solicitudes de alta</h2>
+      <p>El envío del formulario de alta constituye una <strong>solicitud</strong>, no un alta automática. La
+      asociación se pondrá en contacto para verificar los datos y confirmar la incorporación como socio, que
+      queda sujeta a sus estatutos y al pago de la cuota correspondiente.</p>
+
+      <h2>6. Comunicaciones</h2>
+      <p>Al suscribirte a la newsletter o marcar la casilla correspondiente, consientes recibir comunicaciones
+      informativas o comerciales de la asociación. Podrás darte de baja en cualquier momento desde el enlace de
+      cada envío o escribiendo a <span class="ph">{ENTIDAD.emailLegal}</span>.</p>
+
+      <h2>7. Prohibiciones de uso</h2>
+      <ul>
+        <li>Utilizar el sitio con fines ilícitos o que perjudiquen a terceros.</li>
+        <li>Introducir software malicioso o intentar dañar o saturar los sistemas.</li>
+        <li>Suplantar la identidad de terceros o facilitar datos falsos en los formularios.</li>
+        <li>Reproducir o explotar los contenidos sin autorización.</li>
+      </ul>
+
+      <h2>8. Modificaciones del servicio</h2>
+      <p>El titular se reserva el derecho a modificar, suspender o retirar, total o parcialmente, los contenidos
+      y servicios del sitio, así como estos términos, publicando la versión vigente en esta página.</p>
+
+      <h2>9. Legislación aplicable</h2>
+      <p>Estos términos se rigen por la legislación española y de la Unión Europea. Las controversias se
+      someterán a los juzgados y tribunales que correspondan conforme a la normativa aplicable.</p>
+
+      <p class="mt-8 rounded-xl bg-brand-50 p-4 text-sm">⚠️ <strong>Texto en revisión:</strong> base inicial
+      pendiente de validación por la asociación o un asesor legal antes de su publicación definitiva.</p>
+    </article>
+  </section>
+</Layout>

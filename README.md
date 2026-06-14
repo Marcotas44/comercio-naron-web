@@ -154,6 +154,34 @@ Notas:
 - Para refrescar el directorio cuando la asociación actualice su web, vuelve a ejecutar el comando
   y haz commit del `comercios.json` resultante.
 
+## Fichas individuales de comercio
+Cada comercio tiene su página en **`/comercio/[slug]`** (generada con `getStaticPaths`
+desde `comercios.ts`): nombre, categoría, zona, dirección, teléfono, email, web, imagen,
+CTA de contacto (WhatsApp/llamar/web/email), mapa, comercios relacionados y Schema.org `Store`.
+La cifra de comercios es única en toda la web (`totalComercios` en `comercios.ts`).
+
+### Calidad de datos
+- Webs validadas por HTTP: las URLs **mal formadas** (espacios `%20`) se corrigen y las
+  **muertas** (404/sin respuesta) se eliminan (la ficha muestra “Web no disponible”).
+- Categoría `Optica` → `Óptica` y normalizaciones en `comercios.ts` (sobreviven a un reimport).
+- El importador limpia espacios en webs/emails para no reintroducir URLs mal formadas.
+
+## ⚖️ Páginas legales (BASE INICIAL — revisar antes de publicar)
+El sitio incluye `/aviso-legal`, `/politica-privacidad`, `/politica-cookies`,
+`/terminos-condiciones`, `/proteccion-datos` y `/transparencia`, enlazadas desde el footer.
+Están redactadas para España/UE (RGPD, LSSI-CE) y para una asociación de comerciantes.
+
+> 🚨 **AVISO IMPORTANTE:** estos textos legales son una **base inicial orientativa**, NO
+> asesoramiento jurídico. Antes de publicar la web definitivamente, **deben ser revisados y
+> validados por la asociación y/o un asesor legal**, y hay que sustituir todos los
+> **placeholders** (`[NOMBRE LEGAL DE LA ASOCIACIÓN]`, `[CIF/NIF]`, `[DOMICILIO SOCIAL]`,
+> `[EMAIL DE CONTACTO LEGAL]`, `[DOMINIO DEFINITIVO]`, `[FECHA DE ÚLTIMA ACTUALIZACIÓN]`, nombres
+> de la junta…) definidos en `src/data/asociacion.ts`.
+
+Los 3 formularios (contacto, alta de socio, newsletter) incluyen **casilla RGPD obligatoria**
+con enlaces a privacidad y protección de datos; no se envían sin marcarla. Cuando se active el
+banner/gestor de cookies, actualizar la `/politica-cookies` en consecuencia.
+
 ## ⚠️ Contenido a sustituir antes de publicar
 Esta es una **propuesta visual (demo)**. Antes de hacerla pública, reemplazar:
 - **Fotografías** (`public/img/`): ahora son fotos de stock que dan el tono correcto.

@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import dims from '../data/img-dims.json';
+import { totalComercios } from '../data/comercios';
 
 const pasos = [
   { n: '1', icon: 'mail', t: 'Rellenas el formulario', d: 'Solo lo esencial. Te lleva menos de un minuto.' },
@@ -14,7 +15,7 @@ const incluye = [
   'Material e identidad corporativa de la asociación',
   'Representación ante el Ayuntamiento y administraciones',
   'Formación y asesoramiento para tu negocio',
-  'Una comunidad de +90 comercios que reman contigo',
+  `Una comunidad de ${totalComercios} comercios que reman contigo`,
 ];
 ---
 <Layout
@@ -69,7 +70,7 @@ const incluye = [
         </ul>
         <div class="mt-8 flex items-center gap-4 rounded-2xl bg-brand p-6 text-white">
           <Icon name="quote" class="h-9 w-9 shrink-0 text-accent-soft" />
-          <p class="text-sm italic text-white/90">“En la asociación encontré clientes, ideas y compañeros. Lo mejor que hice por mi tienda.” — Marta, Moda Atlántica</p>
+          <p class="text-sm italic text-white/90">“En la asociación encontré clientes, ideas y compañeros. Lo mejor que hice por mi tienda.” — Comerciante asociada de Narón</p>
         </div>
       </div>
 
@@ -81,23 +82,24 @@ const incluye = [
         <form id="socio-form" class="mt-6 grid gap-4">
           <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
           <div class="grid gap-4 sm:grid-cols-2">
-            <input required name="nombre" placeholder="Nombre y apellidos" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
-            <input required name="comercio" placeholder="Nombre del comercio" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="nombre" aria-label="Nombre y apellidos" placeholder="Nombre y apellidos" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="comercio" aria-label="Nombre del comercio" placeholder="Nombre del comercio" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
           </div>
           <div class="grid gap-4 sm:grid-cols-2">
-            <input required name="telefono" type="tel" placeholder="Teléfono" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
-            <input required name="email" type="email" placeholder="Email" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="telefono" type="tel" aria-label="Teléfono" placeholder="Teléfono" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
+            <input required name="email" type="email" aria-label="Email" placeholder="Email" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
           </div>
           <div class="grid gap-4 sm:grid-cols-2">
-            <select required name="sector" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+            <select required name="sector" aria-label="Sector" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
               <option value="">Sector</option><option>Alimentación</option><option>Moda</option><option>Hostelería</option><option>Servicios</option><option>Otro</option>
             </select>
-            <select required name="zona" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+            <select required name="zona" aria-label="Zona" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
               <option value="">Zona</option><option>O Alto</option><option>Xuvia</option><option>A Solaina</option><option>Otra</option>
             </select>
           </div>
           <label class="flex items-start gap-2 text-xs text-ink/60">
-            <input required type="checkbox" name="rgpd" class="mt-1" /> Acepto la política de privacidad y el tratamiento de mis datos.
+            <input required type="checkbox" name="rgpd" aria-label="Acepto la política de privacidad" class="mt-1" />
+            <span>He leído y acepto la <a href="/politica-privacidad" class="font-semibold text-brand underline">política de privacidad</a> y la información de <a href="/proteccion-datos" class="font-semibold text-brand underline">protección de datos</a>, y consiento el tratamiento de mis datos.</span>
           </label>
           <button class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 font-bold text-brand-dark shadow transition hover:bg-accent-soft">
             Quiero asociarme <Icon name="arrow" class="h-5 w-5" />
@@ -119,6 +121,14 @@ const incluye = [
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form));
     if (data.website) return; // honeypot
+
+    // RGPD obligatorio: no se envía sin consentimiento.
+    if (!data.rgpd) {
+      msg.className = 'text-center text-sm font-medium text-red-600';
+      msg.textContent = 'Debes aceptar la política de privacidad para continuar.';
+      msg.classList.remove('hidden');
+      return;
+    }
 
     // Modo demo: sin webhook configurado, no se envía nada a ningún servidor.
     if (!N8N_WEBHOOK) {

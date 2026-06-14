@@ -1,0 +1,95 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import { ENTIDAD } from '../data/asociacion';
+---
+<Layout title="Política de privacidad | Comercio de Narón"
+        description="Política de privacidad y tratamiento de datos personales de la Asociación de Comerciantes de Narón conforme al RGPD y la LOPDGDD.">
+  <PageHero eyebrow="Protección de datos" title="Política de privacidad"
+            subtitle="Cómo tratamos tus datos personales, conforme al RGPD y la LOPDGDD." />
+
+  <section class="mx-auto max-w-6xl px-4 py-16">
+    <article class="prose-legal">
+      <p><em>Última actualización: <span class="ph">{ENTIDAD.actualizacion}</span></em></p>
+
+      <h2>1. Responsable del tratamiento</h2>
+      <ul>
+        <li><strong>Responsable:</strong> <span class="ph">{ENTIDAD.nombre}</span></li>
+        <li><strong>NIF/CIF:</strong> <span class="ph">{ENTIDAD.cif}</span></li>
+        <li><strong>Domicilio:</strong> <span class="ph">{ENTIDAD.domicilio}</span></li>
+        <li><strong>Email:</strong> <span class="ph">{ENTIDAD.emailLegal}</span></li>
+      </ul>
+
+      <h2>2. Datos que se recogen</h2>
+      <p>Tratamos únicamente los datos que nos facilitas a través de los formularios del sitio:</p>
+      <ul>
+        <li><strong>Formulario de contacto:</strong> nombre, email, teléfono (opcional) y el mensaje.</li>
+        <li><strong>Solicitud de alta de socio:</strong> nombre y apellidos, nombre del comercio, teléfono,
+        email, sector y zona.</li>
+        <li><strong>Newsletter:</strong> dirección de correo electrónico.</li>
+        <li><strong>Datos de navegación:</strong> en su caso, los derivados de cookies o herramientas de
+        analítica, según se detalla en la <a href="/politica-cookies">Política de cookies</a>.</li>
+      </ul>
+      <p>No se solicitan categorías especiales de datos. Te pedimos que no incluyas datos sensibles en el
+      campo de mensaje libre.</p>
+
+      <h2>3. Finalidades del tratamiento</h2>
+      <ul>
+        <li>Atender tus consultas y solicitudes de contacto.</li>
+        <li>Gestionar las solicitudes de alta y la relación con los socios de la asociación.</li>
+        <li>Enviarte comunicaciones informativas o comerciales (campañas, eventos, newsletter) cuando lo
+        hayas consentido.</li>
+        <li>En el futuro, automatizar la gestión de estas solicitudes mediante herramientas como n8n y/o un
+        CRM, manteniendo siempre las mismas finalidades y garantías.</li>
+      </ul>
+
+      <h2>4. Base legal</h2>
+      <ul>
+        <li><strong>Consentimiento</strong> del interesado (art. 6.1.a RGPD) para el contacto, la newsletter
+        y las comunicaciones comerciales.</li>
+        <li><strong>Ejecución de una relación asociativa</strong> o medidas precontractuales (art. 6.1.b) para
+        la gestión del alta y la condición de socio.</li>
+        <li><strong>Interés legítimo</strong> (art. 6.1.f) para la seguridad del sitio y la mejora del servicio.</li>
+      </ul>
+
+      <h2>5. Conservación de los datos</h2>
+      <p>Los datos se conservarán durante el tiempo necesario para la finalidad para la que se recogieron y,
+      después, durante los plazos legalmente exigibles. Los datos de socios se conservarán mientras se
+      mantenga la relación asociativa; los de contacto y newsletter, hasta que solicites su supresión o
+      retires el consentimiento.</p>
+
+      <h2>6. Destinatarios</h2>
+      <p>No se cederán datos a terceros salvo obligación legal. Podrán acceder a los datos los proveedores que
+      prestan servicios al responsable (alojamiento web, correo, automatización con n8n, CRM o analítica) en
+      calidad de <strong>encargados del tratamiento</strong>, con los que se suscribirá el correspondiente
+      contrato. Si algún proveedor implicara transferencias internacionales de datos, se aplicarán las
+      garantías previstas en el RGPD.</p>
+
+      <h2>7. Tus derechos (RGPD)</h2>
+      <p>Puedes ejercer los derechos de <strong>acceso, rectificación, supresión, oposición, limitación del
+      tratamiento, portabilidad</strong> y a no ser objeto de decisiones automatizadas (derechos
+      «ARSULIPO»), así como retirar tu consentimiento en cualquier momento.</p>
+
+      <h2>8. Cómo ejercer tus derechos</h2>
+      <p>Escribiendo a <span class="ph">{ENTIDAD.emailLegal}</span>, indicando el derecho que deseas ejercer y
+      adjuntando un documento que acredite tu identidad. También tienes derecho a presentar una reclamación
+      ante la <strong>Agencia Española de Protección de Datos</strong> (<a href="https://www.aepd.es" target="_blank" rel="noopener">www.aepd.es</a>).</p>
+
+      <h2>9. Seguridad</h2>
+      <p>El responsable aplica medidas técnicas y organizativas apropiadas para proteger los datos frente a su
+      pérdida, mal uso o acceso no autorizado, teniendo en cuenta el estado de la técnica y los riesgos del
+      tratamiento.</p>
+
+      <h2>10. Menores</h2>
+      <p>Los formularios del sitio están dirigidos a mayores de edad. No se recaban intencionadamente datos de
+      menores de 14 años sin el consentimiento de sus representantes legales.</p>
+
+      <h2>11. Cambios en la política</h2>
+      <p>Esta política puede actualizarse para adaptarse a cambios normativos o de los servicios. Se publicará
+      la versión vigente en esta misma página con su fecha de actualización.</p>
+
+      <p class="mt-8 rounded-xl bg-brand-50 p-4 text-sm">⚠️ <strong>Texto en revisión:</strong> base inicial
+      pendiente de validación por la asociación o un asesor legal antes de su publicación definitiva.</p>
+    </article>
+  </section>
+</Layout>

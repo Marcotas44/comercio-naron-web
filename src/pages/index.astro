@@ -3,10 +3,11 @@ import Layout from '../layouts/Layout.astro';
 import CTA from '../components/CTA.astro';
 import Icon from '../components/Icon.astro';
 import dims from '../data/img-dims.json';
+import { totalComercios, categorias as todasCategorias } from '../data/comercios';
 
 const stats = [
-  { n: '+90', l: 'comercios asociados' },
-  { n: '40+', l: 'categorías' },
+  { n: `${totalComercios}`, l: 'comercios asociados' },
+  { n: `${todasCategorias.length}`, l: 'categorías' },
   { n: '6€', l: 'cuota al mes' },
   { n: '12', l: 'campañas al año' },
 ];
@@ -36,12 +37,13 @@ const campanas = [
     text: 'Jornadas de puertas abiertas, descuentos y animación en las calles comerciales de Narón.' },
 ];
 
+// Testimonios ilustrativos (sustituir por reales de socios antes de publicar).
 const testimonios = [
-  { img: '/img/testimonio-2.webp', name: 'Marta Vázquez', shop: 'Moda Atlántica',
+  { img: '/img/testimonio-2.webp', name: 'Comerciante de moda', shop: 'Sector textil · Narón',
     quote: 'Desde que estamos en la asociación entran clientes nuevos cada semana. Las campañas conjuntas nos dan una visibilidad que solos no tendríamos.' },
-  { img: '/img/testimonio-1.webp', name: 'Brais Lema', shop: 'Frutería A Horta',
+  { img: '/img/testimonio-1.webp', name: 'Comercio de alimentación', shop: 'Producto fresco · Narón',
     quote: 'Por 6 euros al mes formo parte de algo que mueve a todo el comercio de Narón. La unión se nota en la calle y en la caja.' },
-  { img: '/img/testimonio-3.webp', name: 'Diego Souto', shop: 'Cafetería O Recuncho',
+  { img: '/img/testimonio-3.webp', name: 'Negocio de hostelería', shop: 'Cafetería · Narón',
     quote: 'Los sorteos y eventos llenan el barrio. Notamos el empujón en cada campaña y el trato con la directiva es cercano y rápido.' },
 ];
 ---
@@ -61,7 +63,7 @@ const testimonios = [
           El comercio de Narón,<br /><span class="text-accent-soft">más vivo que nunca.</span>
         </h1>
         <p class="mt-6 max-w-xl text-lg text-white/85">
-          Somos la <strong class="text-white">Asociación de Comerciantes de Narón</strong>: más de 90 tiendas
+          Somos la <strong class="text-white">Asociación de Comerciantes de Narón</strong>: {totalComercios} tiendas
           locales unidas para que comprar cerca siga mereciendo la pena.
         </p>
         <div class="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -117,7 +119,7 @@ const testimonios = [
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div>
         <p class="text-sm font-bold uppercase tracking-[0.18em] text-accent">Directorio</p>
-        <h2 class="rule-accent mt-2 font-display text-3xl font-extrabold md:text-4xl">Más de 40 categorías de comercio</h2>
+        <h2 class="rule-accent mt-2 font-display text-3xl font-extrabold md:text-4xl">{todasCategorias.length} categorías de comercio</h2>
       </div>
       <a href="/directorio" class="inline-flex items-center gap-2 font-semibold text-brand hover:text-brand-dark">Ver todo el directorio <Icon name="arrow" class="h-5 w-5" /></a>
     </div>
@@ -193,7 +195,7 @@ const testimonios = [
           <div class="flex items-center gap-3">
             <div class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-50 text-brand"><Icon name="store" class="h-5 w-5" /></div>
             <div>
-              <div class="font-display text-2xl font-black text-brand">+90</div>
+              <div class="font-display text-2xl font-black text-brand">{totalComercios}</div>
               <div class="text-xs font-medium text-ink/60">comercios ya confían</div>
             </div>
           </div>
@@ -249,7 +251,7 @@ const testimonios = [
   </section>
 
   <!-- CTA FINAL -->
-  <CTA title="Súmate a los +90 comercios que ya forman parte"
+  <CTA title={`Súmate a los ${totalComercios} comercios que ya forman parte`}
        text="Asóciate hoy y empieza a vender mejor mañana. Te acompañamos en todo el proceso."
        ctaLabel="Hazte socio" ctaHref="/hazte-socio" />
 </Layout>

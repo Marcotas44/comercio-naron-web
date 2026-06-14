@@ -47,3 +47,16 @@ h1, h2, h3, .font-display {
 }
 
 .shadow-soft { box-shadow: 0 18px 40px -24px rgba(8,61,49,0.45); }
+
+/* Tipografía de páginas legales */
+.prose-legal { max-width: 48rem; color: #3f4744; }
+.prose-legal h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--color-ink); margin-top: 2.5rem; margin-bottom: .75rem; }
+.prose-legal h3 { font-weight: 700; color: var(--color-ink); margin-top: 1.5rem; margin-bottom: .4rem; }
+.prose-legal p { line-height: 1.7; margin-bottom: 1rem; }
+.prose-legal ul { list-style: disc; padding-left: 1.4rem; margin-bottom: 1rem; }
+.prose-legal ol { list-style: decimal; padding-left: 1.4rem; margin-bottom: 1rem; }
+.prose-legal li { line-height: 1.7; margin-bottom: .35rem; }
+.prose-legal a { color: var(--color-brand); text-decoration: underline; }
+.prose-legal a:hover { color: var(--color-brand-dark); }
+.prose-legal strong { color: var(--color-ink); }
+.prose-legal .ph { background: var(--color-brand-50); color: var(--color-brand-dark); padding: 0 .25rem; border-radius: .25rem; font-weight: 600; white-space: nowrap; }

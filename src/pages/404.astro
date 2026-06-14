@@ -1,13 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
+import { totalComercios } from '../data/comercios';
 ---
 <Layout title="Página no encontrada | Comercio de Narón" description="La página que buscas no existe.">
   <section class="bg-cream bg-grid">
     <div class="mx-auto flex max-w-3xl flex-col items-center px-4 py-28 text-center">
       <span class="font-display text-7xl font-black text-brand">404</span>
       <h1 class="rule-accent text-center mt-4 font-display text-3xl font-extrabold">Esta página se ha ido de compras</h1>
-      <p class="mt-4 max-w-md text-ink/70">No encontramos lo que buscabas, pero en Narón hay más de 90 comercios esperándote.</p>
+      <p class="mt-4 max-w-md text-ink/70">No encontramos lo que buscabas, pero en Narón hay {totalComercios} comercios esperándote.</p>
       <div class="mt-8 flex flex-col gap-3 sm:flex-row">
         <a href="/" class="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-3.5 font-bold text-white transition hover:bg-brand-dark">Volver al inicio</a>
         <a href="/directorio" class="inline-flex items-center justify-center gap-2 rounded-full border border-brand-100 bg-white px-7 py-3.5 font-bold text-brand transition hover:bg-brand-50">
