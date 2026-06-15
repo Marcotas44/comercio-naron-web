@@ -2,7 +2,7 @@
 
 export type UserRole = 'super_admin' | 'admin_asociacion' | 'editor';
 
-export type SolicitudEstado = 'pendiente' | 'aceptado' | 'rechazado';
+export type SolicitudEstado = 'pendiente' | 'contactado' | 'aceptado' | 'rechazado';
 
 export interface Profile {
   id: string;
@@ -64,16 +64,21 @@ export interface Campana {
 
 export interface SolicitudSocio {
   id: string;
-  comercio_nombre: string;
-  contacto_nombre: string;
-  email: string;
+  nombre: string | null;
+  comercio: string | null;
+  categoria: string | null;
   telefono: string | null;
+  email: string | null;
+  direccion: string | null;
   mensaje: string | null;
   estado: SolicitudEstado;
   notas_internas: string | null;
   attended_by: string | null;
   created_at: string;
   updated_at: string;
+  // Compatibilidad con filas legacy del scaffold anterior.
+  comercio_nombre?: string | null;
+  contacto_nombre?: string | null;
 }
 
 export interface SessionUser {

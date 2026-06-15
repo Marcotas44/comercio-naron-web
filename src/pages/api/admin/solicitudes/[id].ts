@@ -5,7 +5,7 @@ import { requireApiRole } from '../../../../lib/auth';
 import { supabaseAdmin } from '../../../../lib/supabase/admin';
 import { getString, flashRedirect } from '../../../../lib/form';
 
-const ESTADOS = ['pendiente', 'aceptado', 'rechazado'] as const;
+const ESTADOS = ['pendiente', 'contactado', 'aceptado', 'rechazado'] as const;
 type Estado = (typeof ESTADOS)[number];
 
 export const POST: APIRoute = async ({ request, params, cookies, redirect }) => {

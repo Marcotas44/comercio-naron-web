@@ -14,7 +14,7 @@ const [comercios, noticiasPublicadas, campanasActivas, solicitudesPendientes, ul
   sb.from('noticias').select('id', { count: 'exact', head: true }).eq('publicado', true),
   sb.from('campanas').select('id', { count: 'exact', head: true }).eq('activo', true),
   sb.from('solicitudes_socio').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente'),
-  sb.from('solicitudes_socio').select('id, comercio_nombre, contacto_nombre, estado, created_at').order('created_at', { ascending: false }).limit(5),
+  sb.from('solicitudes_socio').select('*').order('created_at', { ascending: false }).limit(5),
   sb.from('noticias').select('id, titulo, publicado, fecha_publicacion').order('created_at', { ascending: false }).limit(5),
 ]);
 
@@ -32,6 +32,7 @@ function fmtDate(d: string | null) {
 
 const estadoBadge: Record<string, string> = {
   pendiente: 'bg-amber-50 text-amber-700 border border-amber-200',
+  contactado: 'bg-sky-50 text-sky-700 border border-sky-200',
   aceptado:  'bg-emerald-50 text-emerald-700 border border-emerald-200',
   rechazado: 'bg-rose-50 text-rose-700 border border-rose-200',
 };
@@ -55,10 +56,10 @@ const estadoBadge: Record<string, string> = {
           {ultimasSolicitudes.data.map((s: any) => (
             <li class="flex items-center gap-3 px-5 py-3">
               <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-medium text-slate-900">{s.comercio_nombre}</p>
-                <p class="truncate text-xs text-slate-500">{s.contacto_nombre} · {fmtDate(s.created_at)}</p>
+                <p class="truncate text-sm font-medium text-slate-900">{s.comercio ?? s.comercio_nombre ?? '—'}</p>
+                <p class="truncate text-xs text-slate-500">{(s.nombre ?? s.contacto_nombre ?? '—')} · {fmtDate(s.created_at)}</p>
               </div>
-              <span class:list={['rounded-full px-2 py-0.5 text-[11px] font-medium', estadoBadge[s.estado]]}>{s.estado}</span>
+              <span class:list={['rounded-full px-2 py-0.5 text-[11px] font-medium', estadoBadge[s.estado] ?? 'bg-slate-100 text-slate-600 border border-slate-200']}>{s.estado}</span>
               <a href={`/admin/solicitudes/${s.id}`} class="text-xs font-medium text-[var(--color-brand)] hover:underline">Abrir</a>
             </li>
           ))}

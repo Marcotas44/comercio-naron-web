@@ -90,13 +90,12 @@ const incluye = [
             <input required name="email" type="email" aria-label="Email" placeholder="Email" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
           </div>
           <div class="grid gap-4 sm:grid-cols-2">
-            <select required name="sector" aria-label="Sector" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
-              <option value="">Sector</option><option>Alimentación</option><option>Moda</option><option>Hostelería</option><option>Servicios</option><option>Otro</option>
+            <select required name="categoria" aria-label="Categoría" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
+              <option value="">Categoría</option><option>Alimentación</option><option>Moda</option><option>Hostelería</option><option>Servicios</option><option>Otro</option>
             </select>
-            <select required name="zona" aria-label="Zona" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand">
-              <option value="">Zona</option><option>O Alto</option><option>Xuvia</option><option>A Solaina</option><option>Otra</option>
-            </select>
+            <input name="direccion" aria-label="Dirección" placeholder="Dirección del comercio" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand" />
           </div>
+          <textarea name="mensaje" rows="3" aria-label="Mensaje" placeholder="Cuéntanos sobre tu comercio (opcional)" class="rounded-xl border border-brand-100 px-4 py-3 outline-none focus:border-brand"></textarea>
           <label class="flex items-start gap-2 text-xs text-ink/60">
             <input required type="checkbox" name="rgpd" aria-label="Acepto la política de privacidad" class="mt-1" />
             <span>He leído y acepto la <a href="/politica-privacidad" class="font-semibold text-brand underline">política de privacidad</a> y la información de <a href="/proteccion-datos" class="font-semibold text-brand underline">protección de datos</a>, y consiento el tratamiento de mis datos.</span>
@@ -112,15 +111,13 @@ const incluye = [
 </Layout>
 
 <script>
-  // Webhook aún NO conectado. Cuando se quiera activar el envío,
-  // basta con definir PUBLIC_N8N_WEBHOOK en las variables de entorno de Netlify.
-  const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK || '';
   const form = document.getElementById('socio-form');
   const msg = document.getElementById('form-msg');
+  const btn = form?.querySelector('button');
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form));
-    if (data.website) return; // honeypot
+    if (data.website) return; // honeypot (no enviar)
 
     // RGPD obligatorio: no se envía sin consentimiento.
     if (!data.rgpd) {
@@ -130,23 +127,35 @@ const incluye = [
       return;
     }
 
-    // Modo demo: sin webhook configurado, no se envía nada a ningún servidor.
-    if (!N8N_WEBHOOK) {
+    if (btn) btn.disabled = true;
+    msg.className = 'text-center text-sm text-ink/60';
+    msg.textContent = 'Enviando…';
+    msg.classList.remove('hidden');
+    try {
+      const res = await fetch('/api/public/solicitud-socio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: data.nombre,
+          comercio: data.comercio,
+          categoria: data.categoria,
+          telefono: data.telefono,
+          email: data.email,
+          direccion: data.direccion,
+          mensaje: data.mensaje,
+          website: data.website,
+        }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || '');
       form.reset();
       msg.className = 'text-center text-sm font-medium text-brand';
-      msg.textContent = '✅ ¡Gracias! El formulario está listo; el envío se activará al conectar el sistema.';
-      msg.classList.remove('hidden');
-      return;
-    }
-
-    msg.className = 'text-center text-sm text-ink/60'; msg.textContent = 'Enviando…'; msg.classList.remove('hidden');
-    try {
-      const res = await fetch(N8N_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, origen: 'web-hazte-socio' }) });
-      if (!res.ok) throw new Error();
-      form.reset();
-      msg.className = 'text-center text-sm font-medium text-brand'; msg.textContent = '✅ ¡Solicitud enviada! Te contactaremos pronto.';
-    } catch {
-      msg.className = 'text-center text-sm font-medium text-red-600'; msg.textContent = 'No se pudo enviar. Escríbenos por WhatsApp.';
+      msg.textContent = '✅ ¡Solicitud enviada! Te contactaremos en menos de 24 h.';
+    } catch (err) {
+      msg.className = 'text-center text-sm font-medium text-red-600';
+      msg.textContent = (err && err.message) ? err.message : 'No se pudo enviar. Escríbenos por WhatsApp.';
+    } finally {
+      if (btn) btn.disabled = false;
     }
   });
 </script>
