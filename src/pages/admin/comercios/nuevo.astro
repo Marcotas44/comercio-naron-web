@@ -1,0 +1,22 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ComercioForm from '../../../components/admin/forms/ComercioForm.astro';
+import { supabaseAdmin } from '../../../lib/supabase/admin';
+
+const user = Astro.locals.user!;
+const sb = supabaseAdmin();
+
+const [{ data: catsRows }, { data: zonasRows }] = await Promise.all([
+  sb.from('comercios').select('categoria').not('categoria', 'is', null),
+  sb.from('comercios').select('zona').not('zona', 'is', null),
+]);
+const categoriasExistentes = Array.from(new Set((catsRows ?? []).map((r: any) => r.categoria).filter(Boolean))).sort();
+const zonasExistentes = Array.from(new Set((zonasRows ?? []).map((r: any) => r.zona).filter(Boolean))).sort();
+---
+<AdminLayout title="Nuevo comercio" description="Añade un comercio al directorio" current="comercios" user={user}>
+  <div class="max-w-4xl">
+    <ComercioForm categoriasExistentes={categoriasExistentes} zonasExistentes={zonasExistentes} />
+  </div>
+</AdminLayout>

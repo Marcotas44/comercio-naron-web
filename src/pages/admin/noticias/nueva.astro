@@ -1,0 +1,13 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import NoticiaForm from '../../../components/admin/forms/NoticiaForm.astro';
+
+const user = Astro.locals.user!;
+---
+<AdminLayout title="Nueva noticia" description="Crea una entrada para /noticias" current="noticias" user={user}>
+  <div class="max-w-4xl">
+    <NoticiaForm />
+  </div>
+</AdminLayout>

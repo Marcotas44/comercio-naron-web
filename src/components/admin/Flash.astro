@@ -1,0 +1,20 @@
+---
+import Icon from '../Icon.astro';
+
+interface Props {
+  type?: 'success' | 'error' | 'info';
+  message: string;
+}
+
+const { type = 'info', message } = Astro.props;
+const palette = {
+  success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+  error:   'border-rose-200 bg-rose-50 text-rose-800',
+  info:    'border-sky-200 bg-sky-50 text-sky-800',
+}[type];
+const icon = type === 'success' ? 'check' : type === 'error' ? 'alert' : 'sparkles';
+---
+<div class:list={['flex items-start gap-2 rounded-lg border px-3 py-2 text-sm', palette]} role="status">
+  <Icon name={icon} class="mt-0.5 h-4 w-4 shrink-0" />
+  <p>{message}</p>
+</div>

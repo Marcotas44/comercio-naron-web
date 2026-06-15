@@ -10,6 +10,7 @@ export interface Comercio {
   email: string;
   web: string;
   imagen: string;
+  descripcion?: string;
 }
 
 /** Correcciones de calidad aplicadas sobre los datos importados.

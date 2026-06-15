@@ -1,0 +1,86 @@
+---
+import Icon from '../Icon.astro';
+import type { SessionUser } from '../../lib/supabase/types';
+
+interface Props {
+  user: SessionUser;
+  current: string;
+}
+
+const { user, current } = Astro.props;
+
+const items: Array<{ href: string; label: string; icon: string; key: string }> = [
+  { href: '/admin',                 label: 'Dashboard',   icon: 'dashboard',  key: 'dashboard' },
+  { href: '/admin/comercios',       label: 'Comercios',   icon: 'store',      key: 'comercios' },
+  { href: '/admin/noticias',        label: 'Noticias',    icon: 'newspaper',  key: 'noticias' },
+  { href: '/admin/campanas',        label: 'Campañas',    icon: 'megaphone',  key: 'campanas' },
+  { href: '/admin/solicitudes',     label: 'Solicitudes', icon: 'inbox',      key: 'solicitudes' },
+  { href: '/admin/configuracion',   label: 'Configuración', icon: 'settings', key: 'configuracion' },
+];
+
+const roleLabel: Record<typeof user.role, string> = {
+  super_admin: 'Super Admin',
+  admin_asociacion: 'Administrador',
+  editor: 'Editor',
+};
+---
+<aside class="admin-sidebar fixed inset-y-0 left-0 z-40 w-64 -translate-x-full bg-[var(--color-brand-dark)] text-white shadow-xl transition-transform lg:translate-x-0" data-sidebar>
+  <div class="flex h-16 items-center gap-3 border-b border-white/10 px-5">
+    <span class="grid h-9 w-9 place-items-center rounded-lg bg-[var(--color-accent)] text-[var(--color-brand-dark)] font-bold">CN</span>
+    <div>
+      <p class="text-sm font-semibold leading-tight">Comercio Narón</p>
+      <p class="text-[11px] text-white/60 leading-tight">Panel admin</p>
+    </div>
+    <button type="button" class="ml-auto lg:hidden text-white/70 hover:text-white" data-close-sidebar aria-label="Cerrar menú">
+      <Icon name="x" class="h-5 w-5" />
+    </button>
+  </div>
+
+  <nav class="mt-4 flex flex-col gap-0.5 px-3 text-sm">
+    {items.map(item => {
+      const active = current === item.key;
+      return (
+        <a href={item.href}
+           class:list={[
+             'flex items-center gap-3 rounded-lg px-3 py-2 transition',
+             active ? 'bg-white/10 text-white font-medium' : 'text-white/75 hover:bg-white/5 hover:text-white',
+           ]}>
+          <Icon name={item.icon} class="h-4 w-4" />
+          <span>{item.label}</span>
+        </a>
+      );
+    })}
+  </nav>
+
+  <div class="absolute inset-x-0 bottom-0 border-t border-white/10 p-4">
+    <div class="mb-3 text-xs">
+      <p class="font-medium truncate">{user.nombre ?? user.email}</p>
+      <p class="text-white/55 truncate">{user.email}</p>
+      <span class="mt-1 inline-block rounded-full bg-[var(--color-accent)]/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-[var(--color-accent-soft)]">{roleLabel[user.role]}</span>
+    </div>
+    <form method="POST" action="/api/auth/logout">
+      <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs text-white/85 hover:bg-white/5">
+        <Icon name="logout" class="h-4 w-4" />
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</aside>
+
+<div class="admin-overlay fixed inset-0 z-30 hidden bg-black/40 lg:hidden" data-overlay></div>
+
+<script is:inline>
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest('[data-open-sidebar]')) {
+      document.querySelector('[data-sidebar]')?.classList.add('translate-x-0');
+      document.querySelector('[data-sidebar]')?.classList.remove('-translate-x-full');
+      document.querySelector('[data-overlay]')?.classList.remove('hidden');
+    } else if (target.closest('[data-close-sidebar]') || target.closest('[data-overlay]')) {
+      document.querySelector('[data-sidebar]')?.classList.remove('translate-x-0');
+      document.querySelector('[data-sidebar]')?.classList.add('-translate-x-full');
+      document.querySelector('[data-overlay]')?.classList.add('hidden');
+    }
+  });
+</script>

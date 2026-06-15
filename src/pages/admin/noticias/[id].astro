@@ -1,0 +1,22 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import NoticiaForm from '../../../components/admin/forms/NoticiaForm.astro';
+import { supabaseAdmin } from '../../../lib/supabase/admin';
+import type { Noticia } from '../../../lib/supabase/types';
+
+const user = Astro.locals.user!;
+const { id } = Astro.params;
+const sb = supabaseAdmin();
+const { data, error } = await sb.from('noticias').select('*').eq('id', id!).maybeSingle();
+if (error || !data) {
+  return Astro.redirect('/admin/noticias?flash=' + encodeURIComponent('Noticia no encontrada.') + '&flashType=error');
+}
+const noticia = data as unknown as Noticia;
+---
+<AdminLayout title={noticia.titulo} description="Editar noticia" current="noticias" user={user}>
+  <div class="max-w-4xl">
+    <NoticiaForm noticia={noticia} />
+  </div>
+</AdminLayout>

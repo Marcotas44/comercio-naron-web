@@ -1,0 +1,121 @@
+---
+import FormField from '../FormField.astro';
+import ImageUpload from '../ImageUpload.astro';
+import Icon from '../../Icon.astro';
+import type { Comercio } from '../../../lib/supabase/types';
+
+interface Props {
+  comercio?: Comercio | null;
+  categoriasExistentes?: string[];
+  zonasExistentes?: string[];
+}
+
+const { comercio = null, categoriasExistentes = [], zonasExistentes = [] } = Astro.props;
+const isEdit = !!comercio;
+const folder = `comercios/${comercio?.id ?? 'nuevo'}`;
+---
+<form method="POST" action="/api/admin/comercios" class="space-y-8" data-comercio-form>
+  {isEdit && <input type="hidden" name="id" value={comercio!.id} />}
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Datos básicos</h2>
+    <p class="mt-1 text-sm text-slate-500">Información principal del comercio que se mostrará en el directorio público.</p>
+    <div class="mt-6 grid gap-5 md:grid-cols-2">
+      <FormField label="Nombre" name="nombre" required value={comercio?.nombre ?? ''} placeholder="Ej. Floristería La Camelia" />
+      <FormField label="Slug" name="slug" required value={comercio?.slug ?? ''} hint="URL única (auto-generada al rellenar el nombre)" />
+      <FormField label="Categoría" name="categoria" value={comercio?.categoria ?? ''} placeholder="Ej. Hostelería" />
+      <FormField label="Zona" name="zona" value={comercio?.zona ?? ''} placeholder="Ej. Freixeiro" />
+      <FormField label="Dirección" name="direccion" value={comercio?.direccion ?? ''} placeholder="Calle, número, CP" />
+      <FormField label="Horario" name="horario" value={comercio?.horario ?? ''} placeholder="Ej. L-V 9:00-13:30 / 17:00-20:00" />
+    </div>
+    <datalist id="datalist-categorias">{categoriasExistentes.map(c => <option value={c} />)}</datalist>
+    <datalist id="datalist-zonas">{zonasExistentes.map(z => <option value={z} />)}</datalist>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Contacto</h2>
+    <div class="mt-6 grid gap-5 md:grid-cols-2">
+      <FormField label="Teléfono" name="telefono" type="tel" value={comercio?.telefono ?? ''} autocomplete="tel" />
+      <FormField label="Email" name="email" type="email" value={comercio?.email ?? ''} autocomplete="email" />
+      <FormField label="Web" name="web" type="url" value={comercio?.web ?? ''} placeholder="https://…" />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Descripción</h2>
+    <div class="mt-6 grid gap-5">
+      <FormField label="Descripción larga" name="descripcion" textarea rows={6} value={comercio?.descripcion ?? ''} hint="Texto que aparece en la ficha individual del comercio." />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Imagen y galería</h2>
+    <div class="mt-6 grid gap-6 md:grid-cols-2">
+      <ImageUpload label="Logo / imagen principal" name="logo" value={comercio?.logo ?? comercio?.imagen ?? ''} folder={folder} hint="Si no hay logo, se usará en la tarjeta del directorio." />
+      <ImageUpload label="Galería" name="galeria_imagenes" multiple values={comercio?.galeria_imagenes ?? []} folder={folder} hint="Fotos del local, productos o servicios." />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Configuración</h2>
+    <div class="mt-6 space-y-3">
+      <FormField label="Destacar en portada y directorio" name="destacado" type="checkbox" checked={comercio?.destacado ?? false} hint="Aparecerá con prioridad en la portada y al inicio del listado." />
+    </div>
+  </section>
+
+  <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4">
+    <a href="/admin/comercios" class="text-sm font-medium text-slate-600 hover:text-slate-900">← Cancelar</a>
+    <div class="flex items-center gap-3">
+      {isEdit && (
+        <button type="button" class="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50" data-delete-btn>
+          <span class="inline-flex items-center gap-1.5"><Icon name="trash" class="h-4 w-4" /> Eliminar</span>
+        </button>
+      )}
+      <button type="submit" class="rounded-lg bg-[var(--color-brand)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--color-brand-dark)]">
+        {isEdit ? 'Guardar cambios' : 'Crear comercio'}
+      </button>
+    </div>
+  </div>
+</form>
+
+{isEdit && (
+  <form method="POST" action={`/api/admin/comercios/${comercio!.id}/delete`} class="hidden" data-delete-form>
+    <input type="hidden" name="confirm" value="true" />
+  </form>
+)}
+
+<script is:inline>
+  // Auto-generar slug desde el nombre (solo si el slug aún no ha sido tocado).
+  (() => {
+    const form = document.querySelector('[data-comercio-form]');
+    if (!form) return;
+    const nombre = form.querySelector('[name="nombre"]');
+    const slug = form.querySelector('[name="slug"]');
+    if (!nombre || !slug) return;
+    let touched = !!slug.value;
+    slug.addEventListener('input', () => { touched = true; });
+    function slugify(s) {
+      return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+    }
+    nombre.addEventListener('input', () => {
+      if (touched) return;
+      slug.value = slugify(nombre.value);
+    });
+
+    const cat = form.querySelector('[name="categoria"]');
+    if (cat) cat.setAttribute('list', 'datalist-categorias');
+    const zon = form.querySelector('[name="zona"]');
+    if (zon) zon.setAttribute('list', 'datalist-zonas');
+
+    // Eliminar con confirmación.
+    const delBtn = form.querySelector('[data-delete-btn]');
+    const delForm = document.querySelector('[data-delete-form]');
+    if (delBtn && delForm) {
+      delBtn.addEventListener('click', () => {
+        if (confirm('¿Eliminar este comercio? Esta acción no se puede deshacer.')) {
+          delForm.submit();
+        }
+      });
+    }
+  })();
+</script>

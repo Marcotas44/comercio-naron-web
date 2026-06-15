@@ -1,0 +1,13 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import CampanaForm from '../../../components/admin/forms/CampanaForm.astro';
+
+const user = Astro.locals.user!;
+---
+<AdminLayout title="Nueva campaña" description="Crea una campaña promocional" current="campanas" user={user}>
+  <div class="max-w-4xl">
+    <CampanaForm />
+  </div>
+</AdminLayout>

@@ -1,0 +1,119 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import Icon from '../../../components/Icon.astro';
+import { supabaseAdmin } from '../../../lib/supabase/admin';
+
+const user = Astro.locals.user!;
+const sb = supabaseAdmin();
+
+const q = (Astro.url.searchParams.get('q') ?? '').trim();
+const filterCat = (Astro.url.searchParams.get('categoria') ?? '').trim();
+const filterZona = (Astro.url.searchParams.get('zona') ?? '').trim();
+const showDestacados = Astro.url.searchParams.get('destacados') === '1';
+
+let query = sb.from('comercios').select('id, slug, nombre, categoria, zona, destacado, logo, imagen, updated_at').order('nombre', { ascending: true });
+if (q) query = query.ilike('nombre', `%${q}%`);
+if (filterCat) query = query.eq('categoria', filterCat);
+if (filterZona) query = query.eq('zona', filterZona);
+if (showDestacados) query = query.eq('destacado', true);
+
+const { data: comercios, error: comerciosError } = await query;
+if (comerciosError) {
+  console.error('[admin/comercios] error consultando comercios:', comerciosError.message);
+}
+const list = (comercios ?? []) as Array<{ id: string; slug: string; nombre: string; categoria: string | null; zona: string | null; destacado: boolean; logo: string | null; imagen: string | null; updated_at: string }>;
+
+// Listas para los selects de filtro
+const [{ data: catsRows }, { data: zonasRows }] = await Promise.all([
+  sb.from('comercios').select('categoria').not('categoria', 'is', null),
+  sb.from('comercios').select('zona').not('zona', 'is', null),
+]);
+const categorias = Array.from(new Set((catsRows ?? []).map((r: any) => r.categoria).filter(Boolean))).sort();
+const zonas = Array.from(new Set((zonasRows ?? []).map((r: any) => r.zona).filter(Boolean))).sort();
+---
+<AdminLayout title="Comercios" description={`${list.length} comercios encontrados`} current="comercios" user={user}>
+  <a slot="topbar-actions" href="/admin/comercios/nuevo" class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-brand)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--color-brand-dark)]">
+    <Icon name="plus" class="h-4 w-4" /> Nuevo comercio
+  </a>
+
+  <form method="GET" class="mb-5 grid gap-3 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr_auto_auto_auto_auto]">
+    <div class="relative">
+      <span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center text-slate-400"><Icon name="search" class="h-4 w-4" /></span>
+      <input type="search" name="q" value={q} placeholder="Buscar por nombre…" class="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 py-2 text-sm focus:border-[var(--color-brand)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]/20" />
+    </div>
+    <select name="categoria" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+      <option value="">Todas las categorías</option>
+      {categorias.map(c => <option value={c} selected={c === filterCat}>{c}</option>)}
+    </select>
+    <select name="zona" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+      <option value="">Todas las zonas</option>
+      {zonas.map(z => <option value={z} selected={z === filterZona}>{z}</option>)}
+    </select>
+    <label class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+      <input type="checkbox" name="destacados" value="1" checked={showDestacados} class="rounded border-slate-300 text-[var(--color-brand)]" />
+      Solo destacados
+    </label>
+    <button type="submit" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Aplicar</button>
+  </form>
+
+  {comerciosError ? (
+    <div class="rounded-xl border border-rose-200 bg-rose-50 p-6">
+      <p class="text-sm font-semibold text-rose-800">Error al consultar los comercios</p>
+      <p class="mt-1 text-sm text-rose-700">{comerciosError.message}</p>
+      <p class="mt-2 text-xs text-rose-600">Si el mensaje menciona una columna inexistente (p. ej. <code>logo</code>), créala en Supabase con el SQL de <code>supabase/fix-comercios.sql</code>.</p>
+    </div>
+  ) : list.length === 0 ? (
+    <div class="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center">
+      <p class="text-sm text-slate-500">No hay comercios que coincidan con los filtros.</p>
+      <a href="/admin/comercios/nuevo" class="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-brand)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--color-brand-dark)]">
+        <Icon name="plus" class="h-4 w-4" /> Crear el primer comercio
+      </a>
+    </div>
+  ) : (
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-3 font-semibold">Comercio</th>
+            <th class="px-4 py-3 font-semibold">Categoría</th>
+            <th class="px-4 py-3 font-semibold">Zona</th>
+            <th class="px-4 py-3 font-semibold">Actualizado</th>
+            <th class="px-4 py-3 font-semibold text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {list.map(c => (
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                    {c.logo || c.imagen ? (
+                      <img src={c.logo ?? c.imagen!} alt="" class="h-full w-full object-cover" loading="lazy" />
+                    ) : (
+                      <span class="grid h-full w-full place-items-center text-slate-400"><Icon name="store" class="h-4 w-4" /></span>
+                    )}
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900 flex items-center gap-1.5">
+                      {c.nombre}
+                      {c.destacado && <Icon name="star" class="h-3.5 w-3.5 text-amber-500" />}
+                    </div>
+                    <div class="text-xs text-slate-500">/{c.slug}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-slate-600">{c.categoria ?? '—'}</td>
+              <td class="px-4 py-3 text-slate-600">{c.zona ?? '—'}</td>
+              <td class="px-4 py-3 text-xs text-slate-500">{new Date(c.updated_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+              <td class="px-4 py-3 text-right">
+                <a href={`/admin/comercios/${c.id}`} class="text-sm font-medium text-[var(--color-brand)] hover:underline">Editar</a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</AdminLayout>

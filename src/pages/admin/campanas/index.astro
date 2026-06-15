@@ -1,0 +1,76 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import Icon from '../../../components/Icon.astro';
+import { supabaseAdmin } from '../../../lib/supabase/admin';
+
+const user = Astro.locals.user!;
+const sb = supabaseAdmin();
+const q = (Astro.url.searchParams.get('q') ?? '').trim();
+const estado = Astro.url.searchParams.get('estado') ?? '';
+
+let query = sb.from('campanas').select('id, titulo, descripcion, fecha_inicio, fecha_fin, activo, imagen, updated_at').order('created_at', { ascending: false });
+if (q) query = query.ilike('titulo', `%${q}%`);
+if (estado === 'activas') query = query.eq('activo', true);
+else if (estado === 'inactivas') query = query.eq('activo', false);
+
+const { data } = await query;
+const campanas = (data ?? []) as Array<any>;
+
+function fmtDate(d: string | null) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+---
+<AdminLayout title="Campañas" description={`${campanas.length} campañas`} current="campanas" user={user}>
+  <a slot="topbar-actions" href="/admin/campanas/nueva" class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-brand)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--color-brand-dark)]">
+    <Icon name="plus" class="h-4 w-4" /> Nueva campaña
+  </a>
+
+  <form method="GET" class="mb-5 grid gap-3 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr_auto_auto]">
+    <div class="relative">
+      <span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center text-slate-400"><Icon name="search" class="h-4 w-4" /></span>
+      <input type="search" name="q" value={q} placeholder="Buscar por título…" class="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 py-2 text-sm" />
+    </div>
+    <select name="estado" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+      <option value="">Todas</option>
+      <option value="activas" selected={estado === 'activas'}>Activas</option>
+      <option value="inactivas" selected={estado === 'inactivas'}>Inactivas</option>
+    </select>
+    <button type="submit" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Aplicar</button>
+  </form>
+
+  {campanas.length === 0 ? (
+    <div class="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center">
+      <p class="text-sm text-slate-500">Aún no hay campañas.</p>
+      <a href="/admin/campanas/nueva" class="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-brand)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--color-brand-dark)]">
+        <Icon name="plus" class="h-4 w-4" /> Crear la primera campaña
+      </a>
+    </div>
+  ) : (
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {campanas.map(c => (
+        <a href={`/admin/campanas/${c.id}`} class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:shadow-md">
+          <div class="aspect-[16/9] overflow-hidden bg-slate-100">
+            {c.imagen ? (
+              <img src={c.imagen} alt="" class="h-full w-full object-cover transition group-hover:scale-105" loading="lazy" />
+            ) : (
+              <div class="grid h-full w-full place-items-center text-slate-400"><Icon name="megaphone" class="h-8 w-8" /></div>
+            )}
+          </div>
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="font-display text-base font-semibold text-slate-900 line-clamp-1">{c.titulo}</h3>
+              <span class:list={['rounded-full px-2 py-0.5 text-[11px] font-medium shrink-0', c.activo ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200']}>
+                {c.activo ? 'Activa' : 'Inactiva'}
+              </span>
+            </div>
+            <p class="mt-1 text-xs text-slate-500">{fmtDate(c.fecha_inicio)} → {fmtDate(c.fecha_fin)}</p>
+            {c.descripcion && <p class="mt-2 line-clamp-2 text-sm text-slate-600">{c.descripcion}</p>}
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
+</AdminLayout>

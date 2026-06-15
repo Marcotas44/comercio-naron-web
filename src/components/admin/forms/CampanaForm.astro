@@ -1,0 +1,83 @@
+---
+import FormField from '../FormField.astro';
+import ImageUpload from '../ImageUpload.astro';
+import Icon from '../../Icon.astro';
+import type { Campana } from '../../../lib/supabase/types';
+
+interface Props {
+  campana?: Campana | null;
+}
+
+const { campana = null } = Astro.props;
+const isEdit = !!campana;
+const folder = `campanas/${campana?.id ?? 'nuevo'}`;
+---
+<form method="POST" action="/api/admin/campanas" class="space-y-8" data-campana-form>
+  {isEdit && <input type="hidden" name="id" value={campana!.id} />}
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Detalles de la campaña</h2>
+    <div class="mt-6 grid gap-5">
+      <FormField label="Título" name="titulo" required value={campana?.titulo ?? ''} placeholder="Ej. Sorteo Navidad 2026" />
+      <FormField label="Descripción" name="descripcion" textarea rows={6} value={campana?.descripcion ?? ''} hint="Bases, premios, condiciones, comercios participantes…" />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Fechas</h2>
+    <div class="mt-6 grid gap-5 md:grid-cols-2">
+      <FormField label="Fecha de inicio" name="fecha_inicio" type="date" value={campana?.fecha_inicio ?? ''} />
+      <FormField label="Fecha de fin" name="fecha_fin" type="date" value={campana?.fecha_fin ?? ''} />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Imagen</h2>
+    <div class="mt-6">
+      <ImageUpload label="Imagen de la campaña" name="imagen" value={campana?.imagen ?? ''} folder={folder} />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Visibilidad</h2>
+    <div class="mt-6">
+      <FormField label="Campaña activa (visible en /campanas)" name="activo" type="checkbox" checked={campana?.activo ?? true} hint="Desmarca para ocultarla al público." />
+    </div>
+  </section>
+
+  <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4">
+    <a href="/admin/campanas" class="text-sm font-medium text-slate-600 hover:text-slate-900">← Cancelar</a>
+    <div class="flex items-center gap-3">
+      {isEdit && (
+        <button type="button" class="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50" data-delete-btn>
+          <span class="inline-flex items-center gap-1.5"><Icon name="trash" class="h-4 w-4" /> Eliminar</span>
+        </button>
+      )}
+      <button type="submit" class="rounded-lg bg-[var(--color-brand)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--color-brand-dark)]">
+        {isEdit ? 'Guardar cambios' : 'Crear campaña'}
+      </button>
+    </div>
+  </div>
+</form>
+
+{isEdit && (
+  <form method="POST" action={`/api/admin/campanas/${campana!.id}/delete`} class="hidden" data-delete-form>
+    <input type="hidden" name="confirm" value="true" />
+  </form>
+)}
+
+<script is:inline>
+  (() => {
+    const form = document.querySelector('[data-campana-form]');
+    if (!form) return;
+    const delBtn = form.querySelector('[data-delete-btn]');
+    const delForm = document.querySelector('[data-delete-form]');
+    if (delBtn && delForm) {
+      delBtn.addEventListener('click', () => {
+        if (confirm('¿Eliminar esta campaña? Esta acción no se puede deshacer.')) {
+          delForm.submit();
+        }
+      });
+    }
+  })();
+</script>

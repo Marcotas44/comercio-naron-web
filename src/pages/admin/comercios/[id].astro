@@ -1,0 +1,31 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ComercioForm from '../../../components/admin/forms/ComercioForm.astro';
+import { supabaseAdmin } from '../../../lib/supabase/admin';
+import type { Comercio } from '../../../lib/supabase/types';
+
+const user = Astro.locals.user!;
+const { id } = Astro.params;
+const sb = supabaseAdmin();
+
+const { data, error } = await sb.from('comercios').select('*').eq('id', id!).maybeSingle();
+if (error || !data) {
+  return Astro.redirect('/admin/comercios?flash=' + encodeURIComponent('Comercio no encontrado.') + '&flashType=error');
+}
+
+const comercio = data as unknown as Comercio;
+
+const [{ data: catsRows }, { data: zonasRows }] = await Promise.all([
+  sb.from('comercios').select('categoria').not('categoria', 'is', null),
+  sb.from('comercios').select('zona').not('zona', 'is', null),
+]);
+const categoriasExistentes = Array.from(new Set((catsRows ?? []).map((r: any) => r.categoria).filter(Boolean))).sort();
+const zonasExistentes = Array.from(new Set((zonasRows ?? []).map((r: any) => r.zona).filter(Boolean))).sort();
+---
+<AdminLayout title={comercio.nombre} description={`Editar comercio · /${comercio.slug}`} current="comercios" user={user}>
+  <div class="max-w-4xl">
+    <ComercioForm comercio={comercio} categoriasExistentes={categoriasExistentes} zonasExistentes={zonasExistentes} />
+  </div>
+</AdminLayout>

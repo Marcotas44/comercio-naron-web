@@ -1,0 +1,156 @@
+---
+import Icon from '../Icon.astro';
+
+interface Props {
+  label: string;
+  name: string;
+  value?: string | null;
+  multiple?: boolean;
+  values?: string[];
+  folder: string;
+  hint?: string;
+}
+
+const { label, name, value = '', multiple = false, values = [], folder, hint } = Astro.props;
+const id = `upload-${name}`;
+---
+<div class="space-y-2" data-image-upload data-name={name} data-multiple={multiple ? '1' : '0'} data-folder={folder}>
+  <label class="block text-xs font-semibold uppercase tracking-wide text-slate-600">{label}</label>
+
+  {!multiple && (
+    <input type="hidden" name={name} value={value ?? ''} data-image-value />
+  )}
+  {multiple && values.map(url => (
+    <input type="hidden" name={`${name}[]`} value={url} data-image-value-multi />
+  ))}
+
+  <div class="rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-4">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-slate-500 border border-slate-200">
+          <Icon name="upload" class="h-5 w-5" />
+        </span>
+        <div>
+          <p class="text-sm font-medium text-slate-900">Sube imagen{multiple ? 'es' : ''}</p>
+          <p class="text-xs text-slate-500">JPG · PNG · WebP · SVG · máx 10 MB</p>
+        </div>
+      </div>
+      <label for={id} class="cursor-pointer rounded-lg bg-[var(--color-brand)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-brand-dark)]">
+        Seleccionar
+        <input type="file" id={id} class="sr-only" accept="image/*" multiple={multiple} data-image-input />
+      </label>
+    </div>
+    <p class="mt-2 text-xs text-slate-500" data-image-status></p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4" data-image-preview>
+    {!multiple && value && (
+      <div class="relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <img src={value} alt="" class="h-full w-full object-cover" />
+        <button type="button" class="absolute right-1 top-1 rounded-md bg-white/95 p-1 text-rose-600 hover:bg-rose-50" data-image-remove>
+          <Icon name="x" class="h-3.5 w-3.5" />
+        </button>
+      </div>
+    )}
+    {multiple && values.map(url => (
+      <div class="relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-white" data-image-item={url}>
+        <img src={url} alt="" class="h-full w-full object-cover" />
+        <button type="button" class="absolute right-1 top-1 rounded-md bg-white/95 p-1 text-rose-600 hover:bg-rose-50" data-image-remove>
+          <Icon name="x" class="h-3.5 w-3.5" />
+        </button>
+      </div>
+    ))}
+  </div>
+
+  {hint && <p class="text-xs text-slate-500">{hint}</p>}
+</div>
+
+<script is:inline>
+  document.querySelectorAll('[data-image-upload]').forEach((root) => {
+    const input = root.querySelector('[data-image-input]');
+    const status = root.querySelector('[data-image-status]');
+    const preview = root.querySelector('[data-image-preview]');
+    const multiple = root.dataset.multiple === '1';
+    const folder = root.dataset.folder;
+    const name = root.dataset.name;
+
+    function thumb(url, removable = true) {
+      const wrap = document.createElement('div');
+      wrap.className = 'relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-white';
+      wrap.setAttribute('data-image-item', url);
+      wrap.innerHTML = `<img src="${url}" alt="" class="h-full w-full object-cover" />`;
+      if (removable) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'absolute right-1 top-1 rounded-md bg-white/95 p-1 text-rose-600 hover:bg-rose-50';
+        btn.setAttribute('data-image-remove', '');
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+        wrap.appendChild(btn);
+      }
+      return wrap;
+    }
+
+    function setSingle(url) {
+      const hidden = root.querySelector('[data-image-value]');
+      if (hidden) hidden.value = url || '';
+      preview.innerHTML = '';
+      if (url) preview.appendChild(thumb(url));
+    }
+
+    function addMulti(url) {
+      const hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = `${name}[]`;
+      hidden.value = url;
+      hidden.setAttribute('data-image-value-multi', '');
+      root.appendChild(hidden);
+      preview.appendChild(thumb(url));
+    }
+
+    async function upload(file) {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('folder', folder || 'misc');
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Error al subir' }));
+        throw new Error(err.error || 'Error al subir');
+      }
+      const data = await res.json();
+      return data.url;
+    }
+
+    input?.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      status.textContent = `Subiendo ${files.length} archivo(s)…`;
+      try {
+        for (const f of files) {
+          const url = await upload(f);
+          if (multiple) addMulti(url);
+          else { setSingle(url); break; }
+        }
+        status.textContent = 'Subida completada.';
+      } catch (err) {
+        status.textContent = err.message || 'Error al subir.';
+      } finally {
+        input.value = '';
+      }
+    });
+
+    root.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-image-remove]');
+      if (!btn) return;
+      const item = btn.closest('[data-image-item]');
+      if (multiple && item) {
+        const url = item.getAttribute('data-image-item');
+        root.querySelectorAll('[data-image-value-multi]').forEach((h) => {
+          if (h.value === url) h.remove();
+        });
+        item.remove();
+      } else {
+        setSingle('');
+      }
+    });
+  });
+</script>

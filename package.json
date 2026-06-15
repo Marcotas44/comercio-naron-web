@@ -1,8 +1,8 @@
 {
   "name": "comercio-naron-web",
   "type": "module",
-  "version": "1.0.0",
-  "description": "Web de la Asociación de Comerciantes de Narón - Astro + Tailwind + Netlify",
+  "version": "1.1.0",
+  "description": "Web + panel de administración de la Asociación de Comerciantes de Narón — Astro + Tailwind + Supabase + Netlify",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -12,10 +12,15 @@
     "import:imagenes": "node scripts/download-imagenes.mjs",
     "optimize:imagenes": "node scripts/optimizar-imagenes.mjs",
     "optimize:home": "node scripts/optimizar-home.mjs",
-    "dims:imagenes": "node scripts/dimensiones-imagenes.mjs"
+    "dims:imagenes": "node scripts/dimensiones-imagenes.mjs",
+    "sync:comercios": "node scripts/sync-comercios.mjs",
+    "seed:comercios": "node scripts/seed-comercios.mjs"
   },
   "dependencies": {
+    "@astrojs/netlify": "^5.5.4",
     "@astrojs/sitemap": "^3.2.1",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.45.4",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^4.16.0",
     "tailwindcss": "^4.0.0"

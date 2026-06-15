@@ -1,0 +1,105 @@
+---
+import FormField from '../FormField.astro';
+import ImageUpload from '../ImageUpload.astro';
+import Icon from '../../Icon.astro';
+import type { Noticia } from '../../../lib/supabase/types';
+
+interface Props {
+  noticia?: Noticia | null;
+}
+
+const { noticia = null } = Astro.props;
+const isEdit = !!noticia;
+const folder = `noticias/${noticia?.id ?? 'nuevo'}`;
+
+function toLocalInput(iso: string | null) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+---
+<form method="POST" action="/api/admin/noticias" class="space-y-8" data-noticia-form>
+  {isEdit && <input type="hidden" name="id" value={noticia!.id} />}
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Contenido</h2>
+    <div class="mt-6 grid gap-5">
+      <FormField label="Título" name="titulo" required value={noticia?.titulo ?? ''} />
+      <FormField label="Slug" name="slug" required value={noticia?.slug ?? ''} hint="URL única de la noticia" />
+      <FormField label="Resumen" name="resumen" textarea rows={3} value={noticia?.resumen ?? ''} hint="Aparece en listados (~150 caracteres)." />
+      <FormField label="Contenido" name="contenido" textarea rows={12} value={noticia?.contenido ?? ''} hint="Texto principal. Soporta saltos de línea." />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Metadatos</h2>
+    <div class="mt-6 grid gap-5 md:grid-cols-2">
+      <FormField label="Autor" name="autor" value={noticia?.autor ?? ''} placeholder="Ej. Junta Directiva" />
+      <FormField label="Fecha de publicación" name="fecha_publicacion" type="datetime-local" value={toLocalInput(noticia?.fecha_publicacion ?? null)} hint="Vacío = se publicará con la fecha de creación." />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Imagen destacada</h2>
+    <div class="mt-6">
+      <ImageUpload label="Imagen principal" name="imagen" value={noticia?.imagen ?? ''} folder={folder} />
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="font-display text-lg font-semibold text-slate-900">Visibilidad</h2>
+    <div class="mt-6">
+      <FormField label="Publicada (visible en la web pública)" name="publicado" type="checkbox" checked={noticia?.publicado ?? false} hint="Desmarca para guardar como borrador." />
+    </div>
+  </section>
+
+  <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4">
+    <a href="/admin/noticias" class="text-sm font-medium text-slate-600 hover:text-slate-900">← Cancelar</a>
+    <div class="flex items-center gap-3">
+      {isEdit && (
+        <button type="button" class="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50" data-delete-btn>
+          <span class="inline-flex items-center gap-1.5"><Icon name="trash" class="h-4 w-4" /> Eliminar</span>
+        </button>
+      )}
+      <button type="submit" class="rounded-lg bg-[var(--color-brand)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--color-brand-dark)]">
+        {isEdit ? 'Guardar cambios' : 'Crear noticia'}
+      </button>
+    </div>
+  </div>
+</form>
+
+{isEdit && (
+  <form method="POST" action={`/api/admin/noticias/${noticia!.id}/delete`} class="hidden" data-delete-form>
+    <input type="hidden" name="confirm" value="true" />
+  </form>
+)}
+
+<script is:inline>
+  (() => {
+    const form = document.querySelector('[data-noticia-form]');
+    if (!form) return;
+    const titulo = form.querySelector('[name="titulo"]');
+    const slug = form.querySelector('[name="slug"]');
+    let touched = !!slug.value;
+    slug.addEventListener('input', () => { touched = true; });
+    function slugify(s) {
+      return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+    }
+    titulo.addEventListener('input', () => {
+      if (touched) return;
+      slug.value = slugify(titulo.value);
+    });
+
+    const delBtn = form.querySelector('[data-delete-btn]');
+    const delForm = document.querySelector('[data-delete-form]');
+    if (delBtn && delForm) {
+      delBtn.addEventListener('click', () => {
+        if (confirm('¿Eliminar esta noticia? Esta acción no se puede deshacer.')) {
+          delForm.submit();
+        }
+      });
+    }
+  })();
+</script>

@@ -1,0 +1,22 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import CampanaForm from '../../../components/admin/forms/CampanaForm.astro';
+import { supabaseAdmin } from '../../../lib/supabase/admin';
+import type { Campana } from '../../../lib/supabase/types';
+
+const user = Astro.locals.user!;
+const { id } = Astro.params;
+const sb = supabaseAdmin();
+const { data, error } = await sb.from('campanas').select('*').eq('id', id!).maybeSingle();
+if (error || !data) {
+  return Astro.redirect('/admin/campanas?flash=' + encodeURIComponent('Campaña no encontrada.') + '&flashType=error');
+}
+const campana = data as unknown as Campana;
+---
+<AdminLayout title={campana.titulo} description="Editar campaña" current="campanas" user={user}>
+  <div class="max-w-4xl">
+    <CampanaForm campana={campana} />
+  </div>
+</AdminLayout>

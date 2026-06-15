@@ -110,6 +110,14 @@ const metaDesc = `${c.nombre}${c.categoria ? ` · ${c.categoria}` : ''} en Naró
       </div>
     </div>
 
+    <!-- Sobre este comercio -->
+    {c.descripcion && c.descripcion.trim() && (
+      <div class="mt-10 rounded-3xl border border-brand-100 bg-cream p-8 shadow-soft md:p-10">
+        <h2 class="rule-accent font-display text-2xl font-extrabold md:text-3xl">Sobre este comercio</h2>
+        <p class="mt-6 max-w-3xl whitespace-pre-line text-base leading-relaxed text-ink/80 md:text-lg">{c.descripcion}</p>
+      </div>
+    )}
+
     <!-- Mapa -->
     <div class="mt-10 overflow-hidden rounded-3xl border border-brand-100 shadow-soft">
       <iframe title={`Ubicación de ${c.nombre} en Narón`} src={`https://www.google.com/maps?q=${mapQuery}&output=embed`} class="h-72 w-full" loading="lazy"></iframe>

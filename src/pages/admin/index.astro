@@ -1,0 +1,111 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import StatCard from '../../components/admin/StatCard.astro';
+import Icon from '../../components/Icon.astro';
+import { supabaseAdmin } from '../../lib/supabase/admin';
+
+const user = Astro.locals.user!;
+const sb = supabaseAdmin();
+
+const [comercios, noticiasPublicadas, campanasActivas, solicitudesPendientes, ultimasSolicitudes, ultimasNoticias] = await Promise.all([
+  sb.from('comercios').select('id', { count: 'exact', head: true }),
+  sb.from('noticias').select('id', { count: 'exact', head: true }).eq('publicado', true),
+  sb.from('campanas').select('id', { count: 'exact', head: true }).eq('activo', true),
+  sb.from('solicitudes_socio').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente'),
+  sb.from('solicitudes_socio').select('id, comercio_nombre, contacto_nombre, estado, created_at').order('created_at', { ascending: false }).limit(5),
+  sb.from('noticias').select('id, titulo, publicado, fecha_publicacion').order('created_at', { ascending: false }).limit(5),
+]);
+
+const stats = {
+  comercios: comercios.count ?? 0,
+  noticias: noticiasPublicadas.count ?? 0,
+  campanas: campanasActivas.count ?? 0,
+  solicitudes: solicitudesPendientes.count ?? 0,
+};
+
+function fmtDate(d: string | null) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+const estadoBadge: Record<string, string> = {
+  pendiente: 'bg-amber-50 text-amber-700 border border-amber-200',
+  aceptado:  'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  rechazado: 'bg-rose-50 text-rose-700 border border-rose-200',
+};
+---
+<AdminLayout title="Dashboard" description={`Hola ${user.nombre ?? user.email.split('@')[0]}, este es el estado actual de la web.`} current="dashboard" user={user}>
+  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <StatCard label="Comercios" value={stats.comercios} icon="store" tone="brand" href="/admin/comercios" sub="Total en directorio" />
+    <StatCard label="Noticias publicadas" value={stats.noticias} icon="newspaper" tone="sky" href="/admin/noticias" sub="Visibles en /noticias" />
+    <StatCard label="Campañas activas" value={stats.campanas} icon="megaphone" tone="accent" href="/admin/campanas" sub="Promociones vigentes" />
+    <StatCard label="Solicitudes pendientes" value={stats.solicitudes} icon="inbox" tone="rose" href="/admin/solicitudes" sub="Sin atender" />
+  </section>
+
+  <section class="mt-8 grid gap-6 lg:grid-cols-2">
+    <article class="rounded-xl border border-slate-200 bg-white">
+      <header class="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+        <h2 class="font-display text-lg font-semibold text-slate-900">Últimas solicitudes</h2>
+        <a href="/admin/solicitudes" class="text-xs font-medium text-[var(--color-brand)] hover:underline">Ver todas</a>
+      </header>
+      {ultimasSolicitudes.data && ultimasSolicitudes.data.length > 0 ? (
+        <ul class="divide-y divide-slate-100">
+          {ultimasSolicitudes.data.map((s: any) => (
+            <li class="flex items-center gap-3 px-5 py-3">
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-medium text-slate-900">{s.comercio_nombre}</p>
+                <p class="truncate text-xs text-slate-500">{s.contacto_nombre} · {fmtDate(s.created_at)}</p>
+              </div>
+              <span class:list={['rounded-full px-2 py-0.5 text-[11px] font-medium', estadoBadge[s.estado]]}>{s.estado}</span>
+              <a href={`/admin/solicitudes/${s.id}`} class="text-xs font-medium text-[var(--color-brand)] hover:underline">Abrir</a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="px-5 py-6 text-sm text-slate-500">No hay solicitudes todavía.</p>
+      )}
+    </article>
+
+    <article class="rounded-xl border border-slate-200 bg-white">
+      <header class="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+        <h2 class="font-display text-lg font-semibold text-slate-900">Últimas noticias</h2>
+        <a href="/admin/noticias" class="text-xs font-medium text-[var(--color-brand)] hover:underline">Gestionar</a>
+      </header>
+      {ultimasNoticias.data && ultimasNoticias.data.length > 0 ? (
+        <ul class="divide-y divide-slate-100">
+          {ultimasNoticias.data.map((n: any) => (
+            <li class="flex items-center gap-3 px-5 py-3">
+              <span class:list={['grid h-8 w-8 place-items-center rounded-lg shrink-0', n.publicado ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500']}>
+                <Icon name="newspaper" class="h-4 w-4" />
+              </span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-medium text-slate-900">{n.titulo}</p>
+                <p class="truncate text-xs text-slate-500">{n.publicado ? 'Publicada' : 'Borrador'} · {fmtDate(n.fecha_publicacion)}</p>
+              </div>
+              <a href={`/admin/noticias/${n.id}`} class="text-xs font-medium text-[var(--color-brand)] hover:underline">Editar</a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="px-5 py-6 text-sm text-slate-500">Aún no hay noticias creadas.</p>
+      )}
+    </article>
+  </section>
+
+  <section class="mt-8 rounded-xl border border-[var(--color-brand-100)] bg-[var(--color-brand-50)]/60 p-5">
+    <div class="flex items-start gap-3">
+      <span class="grid h-9 w-9 place-items-center rounded-lg bg-[var(--color-brand)] text-white">
+        <Icon name="sparkles" class="h-4 w-4" />
+      </span>
+      <div>
+        <h3 class="font-display text-base font-semibold text-[var(--color-brand-dark)]">Sincroniza el directorio público</h3>
+        <p class="mt-1 text-sm text-slate-600 max-w-2xl">
+          Cuando edites comercios, ejecuta <code class="rounded bg-white px-1.5 py-0.5 text-xs text-[var(--color-brand-dark)]">npm run sync:comercios</code> y vuelve a desplegar.
+          El sitio público lee de un JSON regenerado desde Supabase para mantener el rendimiento estático.
+        </p>
+      </div>
+    </div>
+  </section>
+</AdminLayout>
