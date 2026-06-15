@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 
 /**
  * Cliente Supabase con clave SERVICE_ROLE.
@@ -26,6 +27,9 @@ export function supabaseAdmin() {
       autoRefreshToken: false,
       persistSession: false,
     },
+    // Node 20 en Netlify Functions no tiene WebSocket nativo; supabase-js lo
+    // necesita para su RealtimeClient. "ws" sirve en cualquier versión de Node.
+    realtime: { transport: WebSocket },
   });
   return cached;
 }

@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import type { AstroCookies } from 'astro';
+import WebSocket from 'ws';
 
 /**
  * Cliente Supabase ligado a las cookies de la petición Astro.
@@ -22,6 +23,11 @@ export function createSupabaseServerClient(cookies: AstroCookies, request: Reque
   }
 
   return createServerClient(url, anonKey, {
+    // Netlify ejecuta las Functions en Node 20, que no trae WebSocket nativo.
+    // supabase-js arranca su RealtimeClient (aunque no usemos Realtime) y
+    // necesita un transporte WebSocket. Proveemos "ws"; es compatible con
+    // cualquier versión de Node, así que en local también funciona igual.
+    realtime: { transport: WebSocket },
     cookies: {
       getAll() {
         const header = request.headers.get('cookie') ?? '';
