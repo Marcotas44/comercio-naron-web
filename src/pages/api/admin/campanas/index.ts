@@ -4,6 +4,9 @@ import type { APIRoute } from 'astro';
 import { requireApiRole } from '../../../../lib/auth';
 import { supabaseAdmin } from '../../../../lib/supabase/admin';
 import { getString, getRequired, getBool, FormError, flashRedirect } from '../../../../lib/form';
+import { triggerDeploy } from '../../../../lib/deploy';
+
+const DEPLOY_MSG = ' La web pública se actualizará en unos minutos.';
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const guard = await requireApiRole(cookies, request, { min: 'editor' });
@@ -27,11 +30,13 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     if (id) {
       const { error } = await sb.from('campanas').update(payload).eq('id', id);
       if (error) throw new FormError(error.message);
-      return redirect(flashRedirect('/admin/campanas', `Campaña "${titulo}" actualizada.`), 303);
+      const deployed = await triggerDeploy();
+      return redirect(flashRedirect('/admin/campanas', `Campaña "${titulo}" actualizada.` + (deployed ? DEPLOY_MSG : '')), 303);
     }
     const { error } = await sb.from('campanas').insert(payload);
     if (error) throw new FormError(error.message);
-    return redirect(flashRedirect('/admin/campanas', `Campaña "${titulo}" creada.`), 303);
+    const deployed = await triggerDeploy();
+    return redirect(flashRedirect('/admin/campanas', `Campaña "${titulo}" creada.` + (deployed ? DEPLOY_MSG : '')), 303);
   } catch (e) {
     const msg = e instanceof FormError ? e.message : 'Error inesperado al guardar.';
     return redirect(flashRedirect(id ? `/admin/campanas/${id}` : '/admin/campanas/nueva', msg, 'error'), 303);

@@ -105,20 +105,47 @@ npm run dev          # localhost:4321
 
 ### 6. Despliegue en Netlify
 
-`netlify.toml` ya define el build (`npm run build` → `dist`). En el panel de
-Netlify (Site settings → Environment variables) añade las mismas tres claves
-de Supabase. El adaptador `@astrojs/netlify` empaqueta las rutas SSR como
-Netlify Functions automáticamente.
+`netlify.toml` define el build como `npm run sync:comercios; npm run build` →
+`dist`. Es decir, **cada deploy regenera `comercios.json` desde Supabase** antes
+de compilar. En el panel de Netlify (Site settings → Environment variables)
+añade las mismas claves de Supabase (necesarias para que el `sync` funcione en
+el build). El adaptador `@astrojs/netlify` empaqueta las rutas SSR como Netlify
+Functions automáticamente.
+
+> Se usa `;` (no `&&`) a propósito: si el `sync` fallara (Supabase caído o env
+> sin definir), el deploy continúa con el `comercios.json` ya commiteado en vez
+> de romper la web pública.
 
 > **Importante**: añade `SUPABASE_SERVICE_ROLE_KEY` **solo** como variable de
 > entorno (no en el código), y considera marcarla como **deploy-only** en
 > Netlify para que no se exponga en builds de previsualización accesibles.
 
+### 7. Auto-deploy al guardar (Build Hook)
+
+Para que la web pública se actualice **sin tocar terminal** al editar desde el
+panel:
+
+1. En Netlify: **Site settings → Build & deploy → Build hooks → Add build hook.**
+   Ponle un nombre (p. ej. `admin-panel`) y rama `main`. Netlify te da una URL
+   tipo `https://api.netlify.com/build_hooks/XXXXXXXX`.
+2. Añade esa URL como variable de entorno **`NETLIFY_BUILD_HOOK_URL`** (en
+   Netlify y, si quieres probar en local, en tu `.env`).
+3. Listo. Al **guardar o eliminar** un comercio, noticia o campaña, el servidor
+   hace `POST` a ese hook y Netlify lanza un deploy que ejecuta `sync:comercios`
+   + `build`. El mensaje de confirmación pasa a ser:
+   *"… La web pública se actualizará en unos minutos."*
+
+> **Seguro ante fallos**: el disparo del deploy es *fire-and-forget* con timeout
+> (`src/lib/deploy.ts`). Si Netlify no responde o la variable no está definida,
+> el guardado en Supabase se completa igualmente y simplemente no se muestra el
+> aviso de actualización (podrás desplegar manualmente).
+
 ## Flujo de trabajo del directorio público
 
-El sitio público (`/directorio`, `/comercio/[slug]`, portada) lee de
-`src/data/comercios.json` en build time. Para que los cambios del panel se
-reflejen en la web pública:
+Con `NETLIFY_BUILD_HOOK_URL` configurada, **no hay flujo manual**: editas en el
+panel y la web pública se regenera sola en pocos minutos.
+
+Si prefieres (o no usas el hook) desplegar a mano:
 
 ```bash
 npm run sync:comercios   # Supabase → src/data/comercios.json
@@ -127,10 +154,9 @@ git commit -am "Actualiza directorio"
 git push                  # Netlify dispara un nuevo build
 ```
 
-> Las **noticias** y **campañas** no necesitan este paso: las páginas públicas
-> `/noticias` y `/campanas` todavía muestran «Contenido de ejemplo». Cuando
-> conectes esas páginas a Supabase (próxima iteración), su CMS ya estará
-> operativo desde el panel.
+> Las páginas públicas `/noticias` y `/campanas` todavía muestran «Contenido de
+> ejemplo». Cuando se conecten a Supabase, su contenido ya se gestiona desde el
+> panel y el auto-deploy también las actualizará.
 
 ## Uso del panel
 

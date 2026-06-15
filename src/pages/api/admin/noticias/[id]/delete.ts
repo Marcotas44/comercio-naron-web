@@ -4,6 +4,7 @@ import type { APIRoute } from 'astro';
 import { requireApiRole } from '../../../../../lib/auth';
 import { supabaseAdmin } from '../../../../../lib/supabase/admin';
 import { flashRedirect } from '../../../../../lib/form';
+import { triggerDeploy } from '../../../../../lib/deploy';
 
 export const POST: APIRoute = async ({ params, cookies, redirect, request }) => {
   const guard = await requireApiRole(cookies, request, { min: 'admin_asociacion' });
@@ -14,5 +15,6 @@ export const POST: APIRoute = async ({ params, cookies, redirect, request }) => 
   const sb = supabaseAdmin();
   const { error } = await sb.from('noticias').delete().eq('id', id);
   if (error) return redirect(flashRedirect(`/admin/noticias/${id}`, error.message, 'error'), 303);
-  return redirect(flashRedirect('/admin/noticias', 'Noticia eliminada.'), 303);
+  const deployed = await triggerDeploy();
+  return redirect(flashRedirect('/admin/noticias', 'Noticia eliminada.' + (deployed ? ' La web pública se actualizará en unos minutos.' : '')), 303);
 };

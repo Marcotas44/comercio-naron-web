@@ -1,5 +1,8 @@
 [build]
-  command = "npm run build"
+  # Sincroniza comercios desde Supabase y luego compila. Se usa ";" (no "&&")
+  # a propósito: si el sync fallara (Supabase caído, env sin definir), el deploy
+  # continúa con el comercios.json ya commiteado en vez de romper la web.
+  command = "npm run sync:comercios; npm run build"
   publish = "dist"
 
 [build.environment]
