@@ -1,0 +1,76 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import CTA from '../../components/CTA.astro';
+import Icon from '../../components/Icon.astro';
+import { supabaseAnon } from '../../lib/supabase/public';
+
+// SSR: la noticia se lee de Supabase por slug. La RLS (anon) solo expone las
+// publicadas, así que los borradores devuelven 404 en la web pública.
+const { slug } = Astro.params;
+if (!slug) return Astro.rewrite('/404');
+
+const { data: n } = await supabaseAnon()
+  .from('noticias')
+  .select('slug, titulo, resumen, contenido, imagen, fecha_publicacion, autor, created_at')
+  .eq('slug', slug)
+  .eq('publicado', true)
+  .maybeSingle();
+
+if (!n) return Astro.rewrite('/404');
+
+function fmtDate(d: string | null) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+const fecha = fmtDate((n.fecha_publicacion as string) ?? (n.created_at as string));
+
+const metaDesc = (n.resumen as string) ||
+  `${n.titulo} · Noticia de la Asociación de Comerciantes de Narón.`;
+---
+<Layout title={`${n.titulo} | Comercio de Narón`} description={metaDesc}
+        image={(n.imagen as string) || '/img/hero.webp'}>
+
+  <!-- Migas -->
+  <nav aria-label="Migas de pan" class="border-b border-brand-100 bg-cream">
+    <ol class="mx-auto flex max-w-3xl flex-wrap items-center gap-2 px-4 py-4 text-sm text-ink/60">
+      <li><a href="/" class="hover:text-brand">Inicio</a></li>
+      <li aria-hidden="true">/</li>
+      <li><a href="/noticias" class="hover:text-brand">Noticias</a></li>
+      <li aria-hidden="true">/</li>
+      <li class="font-semibold text-ink/80 line-clamp-1" aria-current="page">{n.titulo}</li>
+    </ol>
+  </nav>
+
+  <article class="mx-auto max-w-3xl px-4 py-12">
+    <header>
+      <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-ink/55">
+        {fecha && <span class="flex items-center gap-1.5"><Icon name="calendar" class="h-4 w-4" /> {fecha}</span>}
+        {n.autor && <span class="text-ink/45">· {n.autor}</span>}
+      </div>
+      <h1 class="mt-4 font-display text-3xl font-black leading-tight md:text-4xl">{n.titulo}</h1>
+      {n.resumen && <p class="mt-4 text-lg text-ink/70">{n.resumen}</p>}
+    </header>
+
+    {n.imagen && (
+      <div class="mt-8 overflow-hidden rounded-3xl border border-brand-100 shadow-soft">
+        <img src={n.imagen} alt={n.titulo} class="max-h-[28rem] w-full object-cover" />
+      </div>
+    )}
+
+    {n.contenido && (
+      <div class="prose-legal mt-8">
+        <p class="whitespace-pre-line leading-relaxed text-ink/80">{n.contenido}</p>
+      </div>
+    )}
+
+    <p class="mt-10">
+      <a href="/noticias" class="inline-flex items-center gap-1.5 font-semibold text-brand hover:text-brand-dark">← Volver a noticias</a>
+    </p>
+  </article>
+
+  <CTA title="¿Eres socio y tienes una novedad?"
+       text="Publicamos las noticias de nuestros comercios asociados. Cuéntanoslo."
+       ctaLabel="Contactar" ctaHref="/contacto" />
+</Layout>

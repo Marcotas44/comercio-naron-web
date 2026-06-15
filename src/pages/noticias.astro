@@ -1,27 +1,31 @@
 ---
+export const prerender = false;
+
 import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import CTA from '../components/CTA.astro';
 import Icon from '../components/Icon.astro';
-import DemoNotice from '../components/DemoNotice.astro';
-import dims from '../data/img-dims.json';
+import { supabaseAnon } from '../lib/supabase/public';
 
-const destacada = {
-  img: '/img/evento.webp', cat: 'Campañas', date: '2 de junio de 2026',
-  title: 'Arranca el Sorteo de Primavera con cientos de premios',
-  text: 'Los comercios asociados de Narón se suman a la mayor campaña de la temporada. Te contamos cómo conseguir boletos y participar en el sorteo.',
-};
+// SSR: leemos las noticias publicadas directamente de Supabase para que lo que
+// se publica desde el panel aparezca al instante. La RLS (anon) ya filtra a
+// publicado=true; añadimos el filtro explícito por claridad.
+const { data } = await supabaseAnon()
+  .from('noticias')
+  .select('slug, titulo, resumen, imagen, fecha_publicacion, autor, created_at')
+  .eq('publicado', true)
+  .order('fecha_publicacion', { ascending: false, nullsFirst: false })
+  .order('created_at', { ascending: false });
 
-const noticias = [
-  { img: '/img/fruteria.webp', cat: 'Comercio local', date: '28 may 2026', title: 'Cinco razones para comprar fruta y verdura en tu barrio', text: 'Frescura, temporada y trato directo: por qué el producto de proximidad gana siempre.' },
-  { img: '/img/producto-local.webp', cat: 'Socios', date: '20 may 2026', title: 'Nuevos comercios se unen a la asociación', text: 'Damos la bienvenida a las últimas tiendas que se han sumado al comercio de Narón.' },
-  { img: '/img/cafe.webp', cat: 'Eventos', date: '12 may 2026', title: 'Vuelven las Noites de Verán a las calles comerciales', text: 'Música, terrazas y aperturas especiales durante todo el verano en Narón.' },
-  { img: '/img/panaderia.webp', cat: 'Comercio local', date: '5 may 2026', title: 'El obrador tradicional, un tesoro del comercio naronés', text: 'Visitamos a los maestros panaderos que mantienen viva la repostería de siempre.' },
-  { img: '/img/escaparate.webp', cat: 'Formación', date: '26 abr 2026', title: 'Taller gratuito de escaparatismo para socios', text: 'Aprende a montar escaparates que venden con nuestra próxima formación.' },
-  { img: '/img/mercado.webp', cat: 'Institucional', date: '15 abr 2026', title: 'La asociación se reúne con el Ayuntamiento', text: 'Avanzamos en medidas para dinamizar y apoyar al comercio de proximidad.' },
-];
+const noticias = (data ?? []) as Array<any>;
+const destacada = noticias[0] ?? null;
+const resto = noticias.slice(1);
 
-const categorias = ['Todas', 'Comercio local', 'Campañas', 'Eventos', 'Socios', 'Formación', 'Institucional'];
+function fmtDate(n: any) {
+  const d = n.fecha_publicacion ?? n.created_at;
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+}
 ---
 <Layout title="Noticias | Comercio de Narón"
         description="Noticias del comercio local de Narón: campañas, eventos, nuevos socios y novedades de la Asociación de Comerciantes.">
@@ -30,49 +34,57 @@ const categorias = ['Todas', 'Comercio local', 'Campañas', 'Eventos', 'Socios',
             title="Noticias del comercio de Narón"
             subtitle="Campañas, eventos, nuevos socios y todo lo que mueve al comercio local." />
 
-  <DemoNotice text="Las noticias mostradas son ilustrativas y no corresponden a publicaciones reales de la asociación." />
-
   <section class="mx-auto max-w-6xl px-4 py-16">
-    <!-- Filtros de categoría (visual) -->
-    <div class="flex flex-wrap gap-2">
-      {categorias.map((c, i) => (
-        <span class={`rounded-full border border-brand-100 px-4 py-1.5 text-sm font-semibold ${i === 0 ? 'bg-brand text-white border-brand' : 'text-ink/70'}`}>{c}</span>
-      ))}
-    </div>
-
-    <!-- Destacada -->
-    <article class="mt-10 grid overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-soft lg:grid-cols-2">
-      <div class="relative min-h-64 overflow-hidden">
-        <img src={destacada.img} alt={destacada.title} width={dims[destacada.img]?.w} height={dims[destacada.img]?.h} class="h-full w-full object-cover" />
+    {noticias.length === 0 ? (
+      <div class="rounded-3xl border border-dashed border-brand-100 bg-cream p-12 text-center">
+        <Icon name="newspaper" class="mx-auto h-10 w-10 text-brand/40" />
+        <p class="mt-4 text-ink/70">Aún no hay noticias publicadas. Vuelve pronto.</p>
       </div>
-      <div class="flex flex-col justify-center p-8 md:p-10">
-        <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wide">
-          <span class="rounded-full bg-accent px-3 py-1 text-brand-dark">{destacada.cat}</span>
-          <span class="flex items-center gap-1.5 text-ink/55"><Icon name="calendar" class="h-4 w-4" /> {destacada.date}</span>
-        </div>
-        <h2 class="mt-4 font-display text-3xl font-extrabold leading-tight">{destacada.title}</h2>
-        <p class="mt-4 text-ink/70">{destacada.text}</p>
-        <a href="#" class="mt-6 inline-flex w-fit items-center gap-2 font-bold text-brand hover:text-brand-dark">Leer noticia <Icon name="arrow" class="h-5 w-5" /></a>
-      </div>
-    </article>
-
-    <!-- Grid de noticias -->
-    <div class="mt-12 grid gap-7 md:grid-cols-3">
-      {noticias.map((n) => (
-        <article class="flex flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1">
-          <div class="relative h-44 overflow-hidden">
-            <img src={n.img} alt={n.title} width={dims[n.img]?.w} height={dims[n.img]?.h} loading="lazy" class="h-full w-full object-cover" />
-            <span class="absolute left-3 top-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{n.cat}</span>
+    ) : (
+      <>
+        <!-- Destacada (más reciente) -->
+        <article class="grid overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-soft lg:grid-cols-2">
+          <div class="relative min-h-64 overflow-hidden bg-brand-50">
+            {destacada.imagen ? (
+              <img src={destacada.imagen} alt={destacada.titulo} class="h-full w-full object-cover" />
+            ) : (
+              <div class="flex h-full min-h-64 w-full items-center justify-center text-brand/40"><Icon name="newspaper" class="h-12 w-12" /></div>
+            )}
           </div>
-          <div class="flex flex-1 flex-col p-6">
-            <span class="flex items-center gap-1.5 text-xs font-medium text-ink/55"><Icon name="calendar" class="h-3.5 w-3.5" /> {n.date}</span>
-            <h3 class="mt-2 font-display text-lg font-bold leading-snug">{n.title}</h3>
-            <p class="mt-2 flex-1 text-sm text-ink/70">{n.text}</p>
-            <a href="#" class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand hover:text-brand-dark">Leer más <Icon name="arrow" class="h-4 w-4" /></a>
+          <div class="flex flex-col justify-center p-8 md:p-10">
+            <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wide">
+              <span class="flex items-center gap-1.5 text-ink/55"><Icon name="calendar" class="h-4 w-4" /> {fmtDate(destacada)}</span>
+              {destacada.autor && <span class="text-ink/45">· {destacada.autor}</span>}
+            </div>
+            <h2 class="mt-4 font-display text-3xl font-extrabold leading-tight">{destacada.titulo}</h2>
+            {destacada.resumen && <p class="mt-4 text-ink/70">{destacada.resumen}</p>}
+            <a href={`/noticias/${destacada.slug}`} class="mt-6 inline-flex w-fit items-center gap-2 font-bold text-brand hover:text-brand-dark">Leer noticia <Icon name="arrow" class="h-5 w-5" /></a>
           </div>
         </article>
-      ))}
-    </div>
+
+        {resto.length > 0 && (
+          <div class="mt-12 grid gap-7 md:grid-cols-3">
+            {resto.map((n) => (
+              <article class="flex flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-soft transition hover:-translate-y-1">
+                <a href={`/noticias/${n.slug}`} class="relative block h-44 overflow-hidden bg-brand-50">
+                  {n.imagen ? (
+                    <img src={n.imagen} alt={n.titulo} loading="lazy" class="h-full w-full object-cover" />
+                  ) : (
+                    <div class="flex h-full w-full items-center justify-center text-brand/40"><Icon name="newspaper" class="h-8 w-8" /></div>
+                  )}
+                </a>
+                <div class="flex flex-1 flex-col p-6">
+                  <span class="flex items-center gap-1.5 text-xs font-medium text-ink/55"><Icon name="calendar" class="h-3.5 w-3.5" /> {fmtDate(n)}</span>
+                  <h3 class="mt-2 font-display text-lg font-bold leading-snug">{n.titulo}</h3>
+                  {n.resumen && <p class="mt-2 flex-1 text-sm text-ink/70">{n.resumen}</p>}
+                  <a href={`/noticias/${n.slug}`} class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand hover:text-brand-dark">Leer más <Icon name="arrow" class="h-4 w-4" /></a>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </>
+    )}
   </section>
 
   <CTA title="¿Eres socio y tienes una novedad?"
