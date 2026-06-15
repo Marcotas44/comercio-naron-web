@@ -7,6 +7,8 @@ import { supabaseAdmin } from '../../../lib/supabase/admin';
 const BUCKET = 'media';
 const ALLOWED_FOLDERS = /^(comercios|noticias|campanas)\/[a-zA-Z0-9_-]+$/;
 const MAX_SIZE = 10 * 1024 * 1024;
+// Lista blanca explícita. SVG queda EXCLUIDO (riesgo de XSS almacenado).
+const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   const guard = await requireApiRole(cookies, request, { min: 'editor' });
@@ -28,8 +30,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   if (!folder || !ALLOWED_FOLDERS.test(folder)) {
     return new Response(JSON.stringify({ error: 'Carpeta destino inválida.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
-  if (!file.type.startsWith('image/')) {
-    return new Response(JSON.stringify({ error: 'Solo se permiten imágenes.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  if (!ALLOWED_MIME.has(file.type)) {
+    return new Response(JSON.stringify({ error: 'Tipo no permitido. Solo JPEG, PNG o WebP.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
   const safeName = file.name

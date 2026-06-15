@@ -47,7 +47,17 @@ export function createSupabaseServerClient(cookies: AstroCookies, request: Reque
       },
       setAll(cookiesToSet: Array<{ name: string; value: string; options: CookieOptions }>) {
         for (const { name, value, options } of cookiesToSet) {
-          cookies.set(name, value, { ...options, path: options.path ?? '/' });
+          // Endurecemos los flags de la cookie de sesión. No usamos cliente
+          // Supabase en el navegador, así que httpOnly es seguro (evita robo
+          // del token vía XSS). `secure` solo en producción para no romper el
+          // login local sobre http://localhost. sameSite=lax mitiga CSRF.
+          cookies.set(name, value, {
+            ...options,
+            path: options.path ?? '/',
+            httpOnly: true,
+            secure: import.meta.env.PROD,
+            sameSite: 'lax',
+          });
         }
       },
     },

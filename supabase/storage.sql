@@ -15,7 +15,8 @@ values (
   'media',
   true,
   10485760, -- 10 MB por archivo
-  array['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif']
+  -- SVG y GIF excluidos a propósito: SVG permite XSS almacenado.
+  array['image/jpeg', 'image/png', 'image/webp']
 )
 on conflict (id) do update set
   public = excluded.public,

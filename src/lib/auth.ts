@@ -46,6 +46,43 @@ export interface RequireRoleOptions {
   min?: UserRole;
 }
 
+/** Hosts aceptables para esta petición (deriva del propio request, soporta proxy). */
+function requestHosts(request: Request): Set<string> {
+  const hosts = new Set<string>();
+  try { hosts.add(new URL(request.url).host); } catch { /* url no parseable */ }
+  const xf = request.headers.get('x-forwarded-host');
+  if (xf) hosts.add(xf);
+  const h = request.headers.get('host');
+  if (h) hosts.add(h);
+  return hosts;
+}
+
+/**
+ * Defensa CSRF: para métodos que mutan estado, exige que el Origin (o, en su
+ * defecto, el Referer) coincida con el host de la petición. Los formularios
+ * normales del panel son same-origin → el navegador envía Origin y pasan.
+ * Una petición cross-site automatizada no coincide y se rechaza.
+ */
+export function isSameOrigin(request: Request): boolean {
+  const method = request.method.toUpperCase();
+  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') return true;
+
+  let sourceHost: string | null = null;
+  const origin = request.headers.get('origin');
+  if (origin) {
+    try { sourceHost = new URL(origin).host; } catch { /* origin inválido */ }
+  }
+  if (!sourceHost) {
+    const referer = request.headers.get('referer');
+    if (referer) {
+      try { sourceHost = new URL(referer).host; } catch { /* referer inválido */ }
+    }
+  }
+  // Sin Origin ni Referer en una mutación: rechazamos (postura segura).
+  if (!sourceHost) return false;
+  return requestHosts(request).has(sourceHost);
+}
+
 /**
  * Para usar dentro de endpoints /api/admin/*: comprueba sesión y rol.
  * Si falla, devuelve una Response apropiada; si no, devuelve el user.
@@ -55,6 +92,15 @@ export async function requireApiRole(
   request: Request,
   options: RequireRoleOptions = {},
 ): Promise<{ user: SessionUser } | { response: Response }> {
+  // CSRF: rechaza mutaciones cuyo origen no coincide con el host actual.
+  if (!isSameOrigin(request)) {
+    return {
+      response: new Response(JSON.stringify({ error: 'Origen no permitido' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    };
+  }
   const user = await getSessionUser(cookies, request);
   if (!user) {
     return {
