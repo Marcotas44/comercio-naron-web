@@ -10,7 +10,12 @@ export interface Comercio {
   email: string;
   web: string;
   imagen: string;
+  logo?: string;
   descripcion?: string;
+  horario?: string;
+  whatsapp?: string;
+  instagram?: string;
+  facebook?: string;
 }
 
 /** Correcciones de calidad aplicadas sobre los datos importados.

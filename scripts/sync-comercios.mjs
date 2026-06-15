@@ -40,7 +40,7 @@ async function main() {
 
   const { data, error } = await sb
     .from('comercios')
-    .select('slug, nombre, categoria, zona, direccion, telefono, email, web, logo, imagen, descripcion')
+    .select('slug, nombre, categoria, zona, direccion, telefono, email, web, logo, imagen, descripcion, horario, whatsapp, instagram, facebook')
     .order('nombre', { ascending: true });
 
   if (error) {
@@ -63,7 +63,12 @@ async function main() {
     email: c.email ?? '',
     web: c.web ?? '',
     imagen: c.logo ?? c.imagen ?? '',
+    logo: c.logo ?? '',
     descripcion: c.descripcion ?? '',
+    horario: c.horario ?? '',
+    whatsapp: c.whatsapp ?? '',
+    instagram: c.instagram ?? '',
+    facebook: c.facebook ?? '',
   }));
 
   const out = path.join(root, 'src/data/comercios.json');

@@ -23,6 +23,9 @@ export interface Comercio {
   telefono: string | null;
   email: string | null;
   web: string | null;
+  whatsapp: string | null;
+  instagram: string | null;
+  facebook: string | null;
   descripcion: string | null;
   horario: string | null;
   destacado: boolean;

@@ -11,7 +11,18 @@ export function getStaticPaths() {
 
 const { comercio: c } = Astro.props;
 const tel = soloDigitos(c.telefono);
+const wa = soloDigitos(c.whatsapp || c.telefono);
 const dim = c.imagen ? dims[c.imagen] : null;
+
+// Normaliza una red social a URL completa (acepta @usuario, usuario o URL).
+function socialUrl(base: string, value?: string): string | null {
+  const v = (value || '').trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  return `${base}/${v.replace(/^@/, '').replace(/^\/+/, '')}`;
+}
+const instagramUrl = socialUrl('https://instagram.com', c.instagram);
+const facebookUrl = socialUrl('https://facebook.com', c.facebook);
 
 // Comercios relacionados (misma categoría, excluyendo el actual)
 const relacionados = comercios
@@ -98,15 +109,45 @@ const metaDesc = `${c.nombre}${c.categoria ? ` · ${c.categoria}` : ''} en Naró
 
         <!-- CTA de contacto -->
         <div class="mt-8 flex flex-wrap gap-3">
-          {tel && <a href={`https://wa.me/34${tel}`} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-bold text-white shadow-soft transition hover:bg-brand-dark"><Icon name="whatsapp" class="h-5 w-5" /> WhatsApp</a>}
+          {wa && <a href={`https://wa.me/34${wa}`} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-bold text-white shadow-soft transition hover:bg-brand-dark"><Icon name="whatsapp" class="h-5 w-5" /> WhatsApp</a>}
           {tel && <a href={`tel:+34${tel}`} class="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-6 py-3 font-bold text-brand transition hover:bg-brand-50"><Icon name="phone" class="h-5 w-5" /> Llamar</a>}
           {c.web && <a href={c.web} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-6 py-3 font-bold text-brand transition hover:bg-brand-50"><Icon name="arrow" class="h-5 w-5" /> Visitar web</a>}
-          {!tel && !c.web && c.email && <a href={`mailto:${c.email}`} class="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-bold text-white transition hover:bg-brand-dark"><Icon name="mail" class="h-5 w-5" /> Enviar email</a>}
+          {!wa && !tel && !c.web && c.email && <a href={`mailto:${c.email}`} class="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-bold text-white transition hover:bg-brand-dark"><Icon name="mail" class="h-5 w-5" /> Enviar email</a>}
         </div>
 
         <a href={`https://www.google.com/maps?q=${mapQuery}`} target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand-dark">
           <Icon name="mappin" class="h-4 w-4" /> Cómo llegar
         </a>
+
+        {c.horario && (
+          <div class="mt-6 rounded-2xl border border-brand-100 bg-cream p-5">
+            <div class="flex items-center gap-2 text-brand">
+              <Icon name="clock" class="h-5 w-5 shrink-0" />
+              <span class="font-display text-sm font-bold uppercase tracking-wide">Horario</span>
+            </div>
+            <p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-ink/80">{c.horario}</p>
+          </div>
+        )}
+
+        {(instagramUrl || facebookUrl) && (
+          <div class="mt-6">
+            <p class="text-xs font-semibold uppercase tracking-wide text-ink/50">Síguelos</p>
+            <div class="mt-2 flex gap-3">
+              {instagramUrl && (
+                <a href={instagramUrl} target="_blank" rel="noopener" aria-label={`Instagram de ${c.nombre}`}
+                   class="grid h-11 w-11 place-items-center rounded-full border border-brand-100 bg-white text-brand transition hover:bg-brand-50">
+                  <Icon name="instagram" class="h-5 w-5" />
+                </a>
+              )}
+              {facebookUrl && (
+                <a href={facebookUrl} target="_blank" rel="noopener" aria-label={`Facebook de ${c.nombre}`}
+                   class="grid h-11 w-11 place-items-center rounded-full border border-brand-100 bg-white text-brand transition hover:bg-brand-50">
+                  <Icon name="facebook" class="h-5 w-5" />
+                </a>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
 
