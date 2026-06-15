@@ -24,7 +24,17 @@ const sessionMiddleware = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  const user = await getSessionUser(cookies, request);
+  // Resolver la sesión no debe poder tumbar la función SSR. Si algo falla
+  // (p. ej. faltan las variables de entorno de Supabase en el servidor),
+  // tratamos al visitante como no autenticado en lugar de devolver una
+  // respuesta vacía/rota. El flujo posterior (redirect a /login, 401 en API)
+  // queda igual que ante una sesión inexistente.
+  let user = null;
+  try {
+    user = await getSessionUser(cookies, request);
+  } catch (err) {
+    console.error('[middleware] no se pudo resolver la sesión:', err instanceof Error ? err.message : err);
+  }
   locals.user = user;
 
   if (isLogin && user) {

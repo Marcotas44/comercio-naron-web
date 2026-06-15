@@ -197,6 +197,32 @@ solicitudes pendientes) y atajos a las últimas solicitudes y noticias.
 - Cambio de contraseña.
 - (Super Admin) Gestión de usuarios: crear, cambiar rol, eliminar.
 
+## Resolución de problemas
+
+### `/admin` o `/login` descargan un archivo vacío en Netlify (pero funcionan en local)
+
+Síntoma de que la **función SSR no está sirviendo la ruta**. Las páginas públicas
+(estáticas) cargan bien; solo fallan las rutas SSR. Comprueba, en este orden:
+
+1. **Variables de entorno en Netlify** (causa más habitual). Las rutas `/admin`,
+   `/login` y `/api/*` resuelven la sesión con Supabase; si faltan
+   `SUPABASE_URL`, `SUPABASE_ANON_KEY` o `SUPABASE_SERVICE_ROLE_KEY` en
+   **Site settings → Environment variables**, la función falla. Añádelas y
+   vuelve a desplegar (*Clear cache and deploy site*). En los logs de la función
+   verás `Faltan SUPABASE_URL…` si es esto.
+2. **Build command y publish dir**. En el panel de Netlify, *Build & deploy →
+   Build settings*, deben coincidir con `netlify.toml`:
+   - Build command: `rm -rf dist .netlify; npm run sync:comercios; npm run build`
+   - Publish directory: `dist`
+   Si hay valores fijados en la UI que sobreescriben el `netlify.toml`,
+   bórralos o alinéalos.
+3. **Caché de build corrupta**. El `netlify.toml` ya limpia `dist`/`.netlify`
+   antes de compilar para evitar desplegar una función SSR vacía. Si vienes de
+   un deploy roto, fuerza *Deploys → Trigger deploy → Clear cache and deploy site*.
+4. **Adaptador**. `astro.config.mjs` debe tener `output: 'hybrid'` +
+   `adapter: netlify()`. El adaptador genera `.netlify/v1/functions/ssr/` con
+   routing `path: '/*'`; no hace falta configurar funciones a mano.
+
 ## Seguridad
 
 - **Middleware** (`src/middleware.ts`) protege `/admin/*` (redirige a `/login`
