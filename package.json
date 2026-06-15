@@ -14,7 +14,8 @@
     "optimize:home": "node scripts/optimizar-home.mjs",
     "dims:imagenes": "node scripts/dimensiones-imagenes.mjs",
     "sync:comercios": "node scripts/sync-comercios.mjs",
-    "seed:comercios": "node scripts/seed-comercios.mjs"
+    "seed:comercios": "node scripts/seed-comercios.mjs",
+    "gen:descripciones": "node scripts/generar-descripciones-ollama.mjs"
   },
   "dependencies": {
     "@astrojs/netlify": "^5.5.4",
