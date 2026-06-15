@@ -1,18 +1,48 @@
 ---
+export const prerender = false;
+
 import Layout from '../../layouts/Layout.astro';
 import CTA from '../../components/CTA.astro';
 import Icon from '../../components/Icon.astro';
 import { comercios, soloDigitos } from '../../data/comercios';
 import dims from '../../data/img-dims.json';
+import { supabaseAnon } from '../../lib/supabase/public';
 
-export function getStaticPaths() {
-  return comercios.map((c) => ({ params: { slug: c.slug }, props: { comercio: c } }));
-}
+// SSR: la ficha se lee directamente de Supabase por slug, para que los cambios
+// del panel se reflejen al instante. El directorio y la home siguen estáticos.
+const { slug } = Astro.params;
+if (!slug) return Astro.rewrite('/404');
 
-const { comercio: c } = Astro.props;
+const { data: row } = await supabaseAnon()
+  .from('comercios')
+  .select('slug, nombre, categoria, zona, direccion, telefono, email, web, descripcion, horario, logo, imagen, whatsapp, instagram, facebook')
+  .eq('slug', slug)
+  .maybeSingle();
+
+if (!row) return Astro.rewrite('/404');
+
+// Normalizamos al mismo shape que usaba la versión estática (imagen principal
+// = logo subido o imagen heredada), para no tocar el diseño de la ficha.
+const c = {
+  slug: row.slug,
+  nombre: row.nombre,
+  categoria: row.categoria ?? '',
+  zona: row.zona ?? '',
+  direccion: row.direccion ?? '',
+  telefono: row.telefono ?? '',
+  email: row.email ?? '',
+  web: row.web ?? '',
+  imagen: row.logo ?? row.imagen ?? '',
+  descripcion: row.descripcion ?? '',
+  horario: row.horario ?? '',
+  whatsapp: row.whatsapp ?? '',
+  instagram: row.instagram ?? '',
+  facebook: row.facebook ?? '',
+};
+
 const tel = soloDigitos(c.telefono);
 const wa = soloDigitos(c.whatsapp || c.telefono);
-const dim = c.imagen ? dims[c.imagen] : null;
+const dim = c.imagen ? dims[c.imagen as keyof typeof dims] : null;
 
 // Normaliza una red social a URL completa (acepta @usuario, usuario o URL).
 function socialUrl(base: string, value?: string): string | null {
