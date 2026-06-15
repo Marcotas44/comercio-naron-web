@@ -1,0 +1,89 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import CTA from '../../components/CTA.astro';
+import Icon from '../../components/Icon.astro';
+import { supabaseAnon } from '../../lib/supabase/public';
+
+// SSR: la campaña se lee de Supabase por slug. La RLS (anon) solo expone las
+// activas, así que las inactivas devuelven 404 en la web pública.
+const { slug } = Astro.params;
+if (!slug) return Astro.rewrite('/404');
+
+const { data: c } = await supabaseAnon()
+  .from('campanas')
+  .select('slug, titulo, resumen, descripcion, imagen, fecha_inicio, fecha_fin, activa, created_at')
+  .eq('slug', slug)
+  .eq('activa', true)
+  .maybeSingle();
+
+if (!c) return Astro.rewrite('/404');
+
+function fmtDate(d: string | null) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function rango() {
+  const ini = fmtDate(c.fecha_inicio as string | null);
+  const fin = fmtDate(c.fecha_fin as string | null);
+  if (ini && fin) return `Del ${ini} al ${fin}`;
+  if (ini) return `Desde el ${ini}`;
+  if (fin) return `Hasta el ${fin}`;
+  return 'Fechas por confirmar';
+}
+function estado() {
+  const hoy = new Date().toISOString().slice(0, 10);
+  if (c.fecha_inicio && hoy < (c.fecha_inicio as string)) return 'Próximamente';
+  if (c.fecha_fin && hoy > (c.fecha_fin as string)) return 'Finalizada';
+  return 'En curso';
+}
+
+const metaDesc = (c.resumen as string) || (c.descripcion as string)?.slice(0, 150) ||
+  `${c.titulo} · Campaña del comercio de Narón.`;
+---
+<Layout title={`${c.titulo} | Campañas · Comercio de Narón`} description={metaDesc}
+        image={(c.imagen as string) || '/img/evento.webp'}>
+
+  <!-- Migas -->
+  <nav aria-label="Migas de pan" class="border-b border-brand-100 bg-cream">
+    <ol class="mx-auto flex max-w-3xl flex-wrap items-center gap-2 px-4 py-4 text-sm text-ink/60">
+      <li><a href="/" class="hover:text-brand">Inicio</a></li>
+      <li aria-hidden="true">/</li>
+      <li><a href="/campanas" class="hover:text-brand">Campañas</a></li>
+      <li aria-hidden="true">/</li>
+      <li class="font-semibold text-ink/80 line-clamp-1" aria-current="page">{c.titulo}</li>
+    </ol>
+  </nav>
+
+  <article class="mx-auto max-w-3xl px-4 py-12">
+    <header>
+      <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-wide">
+        <span class="rounded-full bg-accent px-3 py-1 text-brand-dark">{estado()}</span>
+        <span class="flex items-center gap-1.5 text-ink/55"><Icon name="calendar" class="h-4 w-4" /> {rango()}</span>
+      </div>
+      <h1 class="mt-4 font-display text-3xl font-black leading-tight md:text-4xl">{c.titulo}</h1>
+      {c.resumen && <p class="mt-4 text-lg text-ink/70">{c.resumen}</p>}
+    </header>
+
+    {c.imagen && (
+      <div class="mt-8 overflow-hidden rounded-3xl border border-brand-100 shadow-soft">
+        <img src={c.imagen} alt={c.titulo} class="max-h-[28rem] w-full object-cover" />
+      </div>
+    )}
+
+    {c.descripcion && (
+      <div class="prose-legal mt-8">
+        <p class="whitespace-pre-line leading-relaxed text-ink/80">{c.descripcion}</p>
+      </div>
+    )}
+
+    <p class="mt-10">
+      <a href="/campanas" class="inline-flex items-center gap-1.5 font-semibold text-brand hover:text-brand-dark">← Volver a campañas</a>
+    </p>
+  </article>
+
+  <CTA title="¿Quieres que tu comercio esté en la próxima campaña?"
+       text="Solo los comercios asociados participan en los sorteos y eventos. Únete desde 6€/mes."
+       ctaLabel="Hazte socio" ctaHref="/hazte-socio" />
+</Layout>

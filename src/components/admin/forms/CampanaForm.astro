@@ -19,7 +19,9 @@ const folder = `campanas/${campana?.id ?? 'nuevo'}`;
     <h2 class="font-display text-lg font-semibold text-slate-900">Detalles de la campaña</h2>
     <div class="mt-6 grid gap-5">
       <FormField label="Título" name="titulo" required value={campana?.titulo ?? ''} placeholder="Ej. Sorteo Navidad 2026" />
-      <FormField label="Descripción" name="descripcion" textarea rows={6} value={campana?.descripcion ?? ''} hint="Bases, premios, condiciones, comercios participantes…" />
+      <FormField label="Slug" name="slug" required value={campana?.slug ?? ''} hint="URL única de la campaña (se autogenera del título)." />
+      <FormField label="Resumen" name="resumen" textarea rows={2} value={campana?.resumen ?? ''} hint="Frase corta para el listado y el encabezado de la ficha." />
+      <FormField label="Descripción / contenido" name="descripcion" textarea rows={6} value={campana?.descripcion ?? ''} hint="Bases, premios, condiciones, comercios participantes…" />
     </div>
   </section>
 
@@ -41,7 +43,7 @@ const folder = `campanas/${campana?.id ?? 'nuevo'}`;
   <section class="rounded-xl border border-slate-200 bg-white p-6">
     <h2 class="font-display text-lg font-semibold text-slate-900">Visibilidad</h2>
     <div class="mt-6">
-      <FormField label="Campaña activa (visible en /campanas)" name="activo" type="checkbox" checked={campana?.activo ?? true} hint="Desmarca para ocultarla al público." />
+      <FormField label="Campaña activa (visible en /campanas)" name="activa" type="checkbox" checked={campana?.activa ?? true} hint="Desmarca para ocultarla al público." />
     </div>
   </section>
 
@@ -70,6 +72,17 @@ const folder = `campanas/${campana?.id ?? 'nuevo'}`;
   (() => {
     const form = document.querySelector('[data-campana-form]');
     if (!form) return;
+
+    // Auto-generar slug desde el título (solo si el slug no se ha tocado).
+    const titulo = form.querySelector('[name="titulo"]');
+    const slug = form.querySelector('[name="slug"]');
+    if (titulo && slug) {
+      let touched = !!slug.value;
+      slug.addEventListener('input', () => { touched = true; });
+      const slugify = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+      titulo.addEventListener('input', () => { if (!touched) slug.value = slugify(titulo.value); });
+    }
+
     const delBtn = form.querySelector('[data-delete-btn]');
     const delForm = document.querySelector('[data-delete-form]');
     if (delBtn && delForm) {

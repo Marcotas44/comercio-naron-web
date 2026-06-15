@@ -79,7 +79,7 @@ drop policy if exists "campanas: editores leen todo"       on public.campanas;
 create policy "campanas: lectura pública activas"
   on public.campanas for select
   to anon
-  using (activo = true);
+  using (activa = true);
 
 create policy "campanas: editores leen todo"
   on public.campanas for select

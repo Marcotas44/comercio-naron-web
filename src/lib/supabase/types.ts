@@ -52,12 +52,14 @@ export interface Noticia {
 
 export interface Campana {
   id: string;
+  slug: string | null;
   titulo: string;
+  resumen: string | null;
   descripcion: string | null;
   fecha_inicio: string | null;
   fecha_fin: string | null;
   imagen: string | null;
-  activo: boolean;
+  activa: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -158,12 +158,12 @@ create table if not exists public.campanas (
   fecha_inicio    date,
   fecha_fin       date,
   imagen          text,
-  activo          boolean not null default true,
+  activa          boolean not null default true,
   created_at      timestamptz not null default timezone('utc', now()),
   updated_at      timestamptz not null default timezone('utc', now())
 );
 
-create index if not exists campanas_activo_idx       on public.campanas (activo) where activo;
+create index if not exists campanas_activa_idx       on public.campanas (activa) where activa;
 create index if not exists campanas_fecha_inicio_idx on public.campanas (fecha_inicio desc);
 
 drop trigger if exists trg_campanas_updated_at on public.campanas;

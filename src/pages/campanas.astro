@@ -1,72 +1,105 @@
 ---
+export const prerender = false;
+
 import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import CTA from '../components/CTA.astro';
 import Icon from '../components/Icon.astro';
-import DemoNotice from '../components/DemoNotice.astro';
-import dims from '../data/img-dims.json';
+import { supabaseAnon } from '../lib/supabase/public';
 
-const destacada = {
-  img: '/img/evento.webp', tag: 'En curso', title: 'Sorteo de Primavera 2026', date: 'Del 21 de marzo al 21 de junio',
-  text: 'La gran campaña de primavera del comercio de Narón. Por cada compra en los comercios asociados recibes boletos para participar en el sorteo de cientos de premios. Cuanto más compras cerca, más oportunidades de ganar.',
-};
+// SSR: leemos las campañas activas de Supabase para que lo publicado desde el
+// panel aparezca al instante. La RLS (anon) ya filtra a activa=true.
+const { data } = await supabaseAnon()
+  .from('campanas')
+  .select('slug, titulo, resumen, descripcion, imagen, fecha_inicio, fecha_fin, activa, created_at')
+  .eq('activa', true)
+  .order('fecha_inicio', { ascending: false, nullsFirst: false })
+  .order('created_at', { ascending: false });
 
-const campanas = [
-  { img: '/img/producto-local.webp', tag: 'Navidad', title: 'Choiva de Agasallos', date: 'Diciembre 2025', text: 'La campaña estrella de Navidad: lluvia de regalos para quienes compran en el comercio local.' },
-  { img: '/img/fruteria.webp', tag: 'Permanente', title: 'Comercio Aberto', date: 'Todo el año', text: 'Jornadas de puertas abiertas, descuentos y animación en las calles comerciales.' },
-  { img: '/img/cafe.webp', tag: 'Verano', title: 'Noites de Verán', date: 'Julio – Agosto', text: 'Aperturas especiales, música y terrazas para llenar de vida el comercio en verano.' },
-  { img: '/img/escaparate.webp', tag: 'Otoño', title: 'Volta ao Cole', date: 'Septiembre', text: 'Promociones y sorteos para la vuelta al cole con el comercio de Narón.' },
-  { img: '/img/mercado.webp', tag: 'Primavera', title: 'Mercado na Rúa', date: 'Mayo', text: 'Los comercios sacan su mejor producto a la calle en una gran feria local.' },
-  { img: '/img/boutique.webp', tag: 'Rebajas', title: 'Días sin IVA', date: 'Enero y Julio', text: 'Jornadas de descuentos coordinados en los comercios asociados.' },
-];
+const campanas = (data ?? []) as Array<any>;
+const destacada = campanas[0] ?? null;
+const resto = campanas.slice(1);
+
+function fmtDate(d: string | null) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function rango(c: any) {
+  const ini = fmtDate(c.fecha_inicio);
+  const fin = fmtDate(c.fecha_fin);
+  if (ini && fin) return `Del ${ini} al ${fin}`;
+  if (ini) return `Desde el ${ini}`;
+  if (fin) return `Hasta el ${fin}`;
+  return 'Fechas por confirmar';
+}
+function estadoDe(c: any): string {
+  const hoy = new Date().toISOString().slice(0, 10);
+  if (c.fecha_inicio && hoy < c.fecha_inicio) return 'Próximamente';
+  if (c.fecha_fin && hoy > c.fecha_fin) return 'Finalizada';
+  return 'En curso';
+}
+const resumenDe = (c: any) => c.resumen || c.descripcion || '';
 ---
 <Layout title="Campañas y eventos | Comercio de Narón"
-        description="Sorteos, ferias y eventos del comercio local de Narón: Sorteo de Primavera, Choiva de Agasallos y mucho más a lo largo del año.">
+        description="Sorteos, ferias y eventos del comercio local de Narón. Descubre las campañas activas de la Asociación de Comerciantes.">
 
   <PageHero eyebrow="Vida en las calles"
             title="Campañas y eventos del comercio"
             subtitle="Cada año movemos Narón con sorteos, ferias y promociones conjuntas. Esto es lo que viene."
             image="/img/evento.webp" />
 
-  <DemoNotice text="Las campañas y fechas mostradas son ilustrativas y no corresponden a convocatorias reales de la asociación." />
-
-  <!-- DESTACADA -->
   <section class="mx-auto max-w-6xl px-4 py-16">
-    <article class="grid overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-soft lg:grid-cols-2">
-      <div class="relative min-h-64 overflow-hidden">
-        <img src={destacada.img} alt={destacada.title} width={dims[destacada.img]?.w} height={dims[destacada.img]?.h} class="h-full w-full object-cover" />
-        <span class="absolute left-4 top-4 rounded-full bg-accent px-4 py-1.5 text-xs font-bold text-brand-dark">{destacada.tag}</span>
+    {campanas.length === 0 ? (
+      <div class="rounded-3xl border border-dashed border-brand-100 bg-cream p-12 text-center">
+        <Icon name="megaphone" class="mx-auto h-10 w-10 text-brand/40" />
+        <p class="mt-4 text-ink/70">No hay campañas activas ahora mismo. ¡Vuelve pronto!</p>
       </div>
-      <div class="flex flex-col justify-center p-8 md:p-10">
-        <div class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-brand"><Icon name="calendar" class="h-4 w-4" /> {destacada.date}</div>
-        <h2 class="mt-3 font-display text-3xl font-extrabold">{destacada.title}</h2>
-        <p class="mt-4 text-ink/70">{destacada.text}</p>
-        <a href="/contacto" class="mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-brand px-7 py-3.5 font-bold text-white transition hover:bg-brand-dark">Quiero participar <Icon name="arrow" class="h-5 w-5" /></a>
-      </div>
-    </article>
+    ) : (
+      <article class="grid overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-soft lg:grid-cols-2">
+        <div class="relative min-h-64 overflow-hidden bg-brand-50">
+          {destacada.imagen ? (
+            <img src={destacada.imagen} alt={destacada.titulo} class="h-full w-full object-cover" />
+          ) : (
+            <div class="flex h-full min-h-64 w-full items-center justify-center text-brand/40"><Icon name="megaphone" class="h-12 w-12" /></div>
+          )}
+          <span class="absolute left-4 top-4 rounded-full bg-accent px-4 py-1.5 text-xs font-bold text-brand-dark">{estadoDe(destacada)}</span>
+        </div>
+        <div class="flex flex-col justify-center p-8 md:p-10">
+          <div class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-brand"><Icon name="calendar" class="h-4 w-4" /> {rango(destacada)}</div>
+          <h2 class="mt-3 font-display text-3xl font-extrabold">{destacada.titulo}</h2>
+          {resumenDe(destacada) && <p class="mt-4 text-ink/70">{resumenDe(destacada)}</p>}
+          <a href={`/campanas/${destacada.slug}`} class="mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-brand px-7 py-3.5 font-bold text-white transition hover:bg-brand-dark">Ver campaña <Icon name="arrow" class="h-5 w-5" /></a>
+        </div>
+      </article>
+    )}
   </section>
 
-  <!-- TODAS LAS CAMPAÑAS -->
-  <section class="bg-cream bg-grid">
-    <div class="mx-auto max-w-6xl px-4 py-20">
-      <h2 class="rule-accent font-display text-3xl font-extrabold md:text-4xl">Calendario de campañas</h2>
-      <div class="mt-10 grid gap-7 md:grid-cols-3">
-        {campanas.map((c) => (
-          <article class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-brand-100">
-            <div class="relative h-44 overflow-hidden">
-              <img src={c.img} alt={c.title} width={dims[c.img]?.w} height={dims[c.img]?.h} loading="lazy" class="h-full w-full object-cover" />
-              <span class="absolute left-3 top-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{c.tag}</span>
-            </div>
-            <div class="flex flex-1 flex-col p-6">
-              <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand"><Icon name="calendar" class="h-4 w-4" /> {c.date}</div>
-              <h3 class="mt-2 font-display text-xl font-bold">{c.title}</h3>
-              <p class="mt-2 flex-1 text-sm text-ink/70">{c.text}</p>
-            </div>
-          </article>
-        ))}
+  {resto.length > 0 && (
+    <section class="bg-cream bg-grid">
+      <div class="mx-auto max-w-6xl px-4 py-20">
+        <h2 class="rule-accent font-display text-3xl font-extrabold md:text-4xl">Más campañas</h2>
+        <div class="mt-10 grid gap-7 md:grid-cols-3">
+          {resto.map((c) => (
+            <a href={`/campanas/${c.slug}`} class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-brand-100 transition hover:-translate-y-1">
+              <div class="relative h-44 overflow-hidden bg-brand-50">
+                {c.imagen ? (
+                  <img src={c.imagen} alt={c.titulo} loading="lazy" class="h-full w-full object-cover" />
+                ) : (
+                  <div class="flex h-full w-full items-center justify-center text-brand/40"><Icon name="megaphone" class="h-8 w-8" /></div>
+                )}
+                <span class="absolute left-3 top-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">{estadoDe(c)}</span>
+              </div>
+              <div class="flex flex-1 flex-col p-6">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand"><Icon name="calendar" class="h-4 w-4" /> {rango(c)}</div>
+                <h3 class="mt-2 font-display text-xl font-bold">{c.titulo}</h3>
+                {resumenDe(c) && <p class="mt-2 flex-1 text-sm text-ink/70">{resumenDe(c)}</p>}
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
   <CTA title="¿Quieres que tu comercio esté en la próxima campaña?"
        text="Solo los comercios asociados participan en los sorteos y eventos. Únete desde 6€/mes."

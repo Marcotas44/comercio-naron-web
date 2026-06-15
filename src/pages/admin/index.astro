@@ -12,7 +12,7 @@ const sb = supabaseAdmin();
 const [comercios, noticiasPublicadas, campanasActivas, solicitudesPendientes, ultimasSolicitudes, ultimasNoticias] = await Promise.all([
   sb.from('comercios').select('id', { count: 'exact', head: true }),
   sb.from('noticias').select('id', { count: 'exact', head: true }).eq('publicado', true),
-  sb.from('campanas').select('id', { count: 'exact', head: true }).eq('activo', true),
+  sb.from('campanas').select('id', { count: 'exact', head: true }).eq('activa', true),
   sb.from('solicitudes_socio').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente'),
   sb.from('solicitudes_socio').select('*').order('created_at', { ascending: false }).limit(5),
   sb.from('noticias').select('id, titulo, publicado, fecha_publicacion').order('created_at', { ascending: false }).limit(5),
